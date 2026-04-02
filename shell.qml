@@ -12,9 +12,16 @@ PanelWindow {
     property color colMuted: "#444b6a"
     property color colCyan: "#0db9d7"
     property color colBlue: "#7aa2f7"
+    property color bgModules: "#1d1e2f"
     property color colYellow: "#e0af68"
     property string fontFamily: "JetBrainsMono Nerd Font"
     property int fontSize: 16
+
+
+    property int cpuUsage: 0
+    property int memUsage: 0
+    property var lastCpuIdle: 0
+    property var lastCpuTotal: 0
 
 
     anchors.top: true
@@ -38,8 +45,12 @@ PanelWindow {
 
     RowLayout {
         anchors.fill: background
-        anchors.margins: 8
+        anchors.topMargin: 5 
+        anchors.bottomMargin: 5
+        anchors.leftMargin: 8
+        anchors.rightMargin: 8
         spacing: 2
+
         Repeater {
             model: 5
 
@@ -55,8 +66,10 @@ PanelWindow {
                 height: 22
                 radius: isActive ? width / 4.5  : width / 2
 
-                color: mouseArea.containsMouse ? "#F4F4F4" : isActive ? "#2fbde7" : workspace ? "#6f9eb7" : "#1d1e2f"
+                // border.color: "white"
+                // border.width: 1
 
+                color: mouseArea.containsMouse ? "#F4F4F4" : isActive ? "#2fbde7" : workspace ? "#6f9eb7" : "#1d1e2f"
 
                 Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
@@ -78,23 +91,96 @@ PanelWindow {
             }
         }
         Item { Layout.fillWidth: true }
+
+        Item {
+            id: clockContainer
+            Layout.preferredWidth: clock.width + 20
+            Layout.preferredHeight: 30 
+            anchors.centerIn: parent
+
+            Rectangle {
+                id: clockBg
+                anchors.fill: parent
+                radius: 5
+                color: root.bgModules
+                opacity: 1
+            }
+
+            Text {
+                id: clock
+                anchors.centerIn: parent
+                color: root.colBlue
+                font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                text: Qt.formatDateTime(new Date(), "dd - HH:mm")
+
+                Timer {
+                    interval: 1000; running: true; repeat: true
+                    onTriggered: clock.text = Qt.formatDateTime(new Date(), "dd - HH:mm")
+                }
+            }
+        }
+        Item {
+            id: rightModules
+            Layout.preferredWidth: cpu.width + mem.width + 20
+            Layout.preferredHeight: 30 
+            Layout.alignment: Qt.AlignVCenter
+
+            Rectangle {
+                id: rightBg
+                anchors.fill: parent
+                radius: 5
+                color: root.bgModules
+                opacity: 1
+            }
+            Row {
+                id: contentRow
+                anchors.centerIn: parent
+                spacing: 10
+                Text {
+                    Layout.alignment: right
+                    id: cpu
+                    text: "CPU: " + cpuUsage + "%"
+                    color: root.colYellow
+                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                }
+
+                Text {
+                    id: mem
+                    Layout.alignment: right
+                    text: "Mem: " + memUsage + "%"
+                    color: root.colCyan
+                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                }
+            }
+        }
     }
 }
-            // Text {
-            //     property var workspace: Hyprland.workspaces.values.find(w => w.id == index + 1)
-            //     property bool isActive: Hyprland.focusedWorkspace?.id === (index + 1)
-            //
-            //     text: index + 1
-            //     // color : isActive ? "#0db9d7" : (workspace ? "#7aa2f7" : "#1d1e2f")
-            //     // color: mouseArea.containsMouse ? "white" : "black"
-            //     font { pointSize: 14; bold: true; }
-            //
-            //     MouseArea{
-            //         id: mouseArea
-            //         anchors.fill: parent
-            //         onClicked: Hyprland.dispatch("workspace " + (index + 1)) 
-            //         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-            //         hoverEnabled: true
-            //     }
-            //     color: mouseArea.containsMouse ? "white" : (isActive ? "#0db9d7" : (workspace ? "#7aa2f7" : "#1d1e2f"))
-            // }
+
+//         Rectangle {
+//             anchors.centerIn: clock 
+//             width: clock.width + 10
+//             // height: clock.height + 10
+//             radius: 5
+//             color: root.colBg
+//
+//         }
+//             Text {
+//                 id: clock
+//                 anchors.centerIn: parent
+//                 color: root.colBlue
+//                 font {
+//                     family: root.fontFamily
+//                     pixelSize: root.fontSize 
+//                     bold: true 
+//                 }
+//                 text: Qt.formatDateTime(new Date(), "dd - HH:mm")
+//                 Timer {
+//                     interval: 1000
+//                     running: true
+//                     repeat: true
+//                     onTriggered: clock.text = Qt.formatDateTime(new Date(), "dd - HH:mm")
+//                 }
+//             }
+//     }
+//
+// }
