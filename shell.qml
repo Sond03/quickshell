@@ -5,6 +5,8 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
 
+import "./modules" as Modules
+
 PanelWindow {
     id: root
     property color colBg: "#1a1b26"
@@ -17,12 +19,16 @@ PanelWindow {
     property string fontFamily: "JetBrainsMono Nerd Font"
     property int fontSize: 16
 
+    Modules.Processes { id: sysData }
 
-    property int cpuUsage: 0
-    property int memUsage: 0
-    property var lastCpuIdle: 0
-    property var lastCpuTotal: 0
-
+    Modules.MemoryWidget {
+    id: memPopup
+    anchor.window: root 
+    isHovered: mouseMem.containsMouse
+    procData: sysData.topProcs
+    anchor.rect.x: parentWindow.width - 260
+    anchor.rect.y: parentWindow.height + 8
+}
 
     anchors.top: true
     anchors.left: true
@@ -36,8 +42,6 @@ PanelWindow {
         anchors.fill: parent 
         anchors.leftMargin: 6
         anchors.rightMargin: 6
-        // anchors.bottomMargin: 5
-        // anchors.topMargin: 5
         opacity: 0.75
         radius: 10
         color: root.colBg
@@ -96,7 +100,7 @@ PanelWindow {
             id: clockContainer
             Layout.preferredWidth: clock.width + 20
             Layout.preferredHeight: 30 
-            anchors.centerIn: parent
+            Layout.alignment: Qt.AlignLeft
 
             Rectangle {
                 id: clockBg
@@ -119,6 +123,7 @@ PanelWindow {
                 }
             }
         }
+        Item { Layout.fillWidth: true }
         Item {
             id: rightModules
             Layout.preferredWidth: cpu.width + mem.width + 20
@@ -137,50 +142,27 @@ PanelWindow {
                 anchors.centerIn: parent
                 spacing: 10
                 Text {
-                    Layout.alignment: right
                     id: cpu
-                    text: "CPU: " + cpuUsage + "%"
+                    text: "CPU:" + sysData.cpuUsage + "%"
                     color: root.colYellow
                     font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
                 }
 
                 Text {
                     id: mem
-                    Layout.alignment: right
-                    text: "Mem: " + memUsage + "%"
+                    text: sysData.memUsage 
                     color: root.colCyan
                     font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+
+                    MouseArea {
+                        id: mouseMem
+                        anchors.fill: parent 
+                        hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                    }
                 }
             }
         }
     }
 }
 
-//         Rectangle {
-//             anchors.centerIn: clock 
-//             width: clock.width + 10
-//             // height: clock.height + 10
-//             radius: 5
-//             color: root.colBg
-//
-//         }
-//             Text {
-//                 id: clock
-//                 anchors.centerIn: parent
-//                 color: root.colBlue
-//                 font {
-//                     family: root.fontFamily
-//                     pixelSize: root.fontSize 
-//                     bold: true 
-//                 }
-//                 text: Qt.formatDateTime(new Date(), "dd - HH:mm")
-//                 Timer {
-//                     interval: 1000
-//                     running: true
-//                     repeat: true
-//                     onTriggered: clock.text = Qt.formatDateTime(new Date(), "dd - HH:mm")
-//                 }
-//             }
-//     }
-//
-// }
