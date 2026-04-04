@@ -51,7 +51,7 @@ Modules.BatWidget {
         
 function batIcon() {
     var icons = ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
-    var index = Math.round(UPower.displayDevice.percentage * 11)
+    var index = Math.min(Math.ceil(UPower.displayDevice.percentage * 10), 10)
     return icons[index]
 }
 
