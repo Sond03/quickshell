@@ -66,6 +66,26 @@ Item {
         }
     }
 
+    Process {
+        id: cpuCoresProc
+        command: ["sh", "-c", "grep 'cpu ' /proc/stat"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (!data) return
+                var parts = data.trim().split(/\s+/)
+                var idle = parseInt(parts[4])
+                var total = parts.slice(1).reduce((a, b) => a + parseInt(b), 0)
+
+                var diffIdle = idle - statsRoot.lastCpuIdle
+                var diffTotal = total - statsRoot.lastCpuTotal
+
+                statsRoot.cpuUsage = Math.round(100 * (1 - diffIdle / diffTotal))
+                statsRoot.lastCpuIdle = idle
+                statsRoot.lastCpuTotal = total
+            }
+        }
+    }
+
     Timer {
         interval: 2000; running: true; repeat: true
         onTriggered: {

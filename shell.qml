@@ -30,6 +30,15 @@ PanelWindow {
     anchor.rect.y: parentWindow.height + 5
 }
 
+    Modules.CpuWidget{
+    id: cpuPopup
+    anchor.window: root 
+    isHovered: mouseCpu.containsMouse
+    anchor.rect.x: parentWindow.width - 250
+    anchor.rect.y: parentWindow.height + 5
+    }
+        
+
     anchors.top: true
     anchors.left: true
     anchors.right: true
@@ -70,8 +79,6 @@ PanelWindow {
                 height: 22
                 radius: isActive ? width / 4.5  : width / 2
 
-                // border.color: "white"
-                // border.width: 1
 
                 color: mouseArea.containsMouse ? "#F4F4F4" : isActive ? "#2fbde7" : workspace ? "#6f9eb7" : "#1d1e2f"
 
@@ -80,7 +87,6 @@ PanelWindow {
                 Text {
                     text: index +1
                     anchors.centerIn: parent 
-                    // font { family: root.fontFamily; pointSize: 13; bold: true; }
                     font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
                     color: mouseArea.containsMouse ? "#1d1e2f" : "#00FFF" 
                 }
@@ -123,7 +129,9 @@ PanelWindow {
                 }
             }
         }
+
         Item { Layout.fillWidth: true }
+
         Item {
             id: rightModules
             Layout.preferredWidth: cpu.width + mem.width + 20
@@ -146,6 +154,13 @@ PanelWindow {
                     text: "CPU:" + sysData.cpuUsage + "%"
                     color: root.colYellow
                     font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+
+                    MouseArea {
+                        id: mouseCpu
+                        anchors.fill: parent 
+                        hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                    }
                 }
 
                 Text {
