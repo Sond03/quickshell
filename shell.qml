@@ -4,6 +4,7 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import Quickshell.Services.UPower
 
 import "./modules" as Modules
 
@@ -16,6 +17,7 @@ PanelWindow {
     property color colBlue: "#7aa2f7"
     property color bgModules: "#1d1e2f"
     property color colYellow: "#e0af68"
+    property color colGreen: "#a4df9f"
     property string fontFamily: "JetBrainsMono Nerd Font"
     property int fontSize: 14
 
@@ -30,14 +32,28 @@ PanelWindow {
     anchor.rect.y: parentWindow.height + 5
 }
 
-    Modules.CpuWidget{
+Modules.CpuWidget{
     id: cpuPopup
     anchor.window: root 
     isHovered: mouseCpu.containsMouse
     anchor.rect.x: parentWindow.width - 250
     anchor.rect.y: parentWindow.height + 5
-    }
+}
+
+Modules.BatWidget {
+    id: batPopup
+    anchor.window: root
+    isHovered: mouseBat.containsMouse
+    anchor.rect.x: parentWindow.width - 315
+    anchor.rect.y: parentWindow.height + 5
+    
+}
         
+function batIcon() {
+    var icons = ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    var index = Math.round(UPower.displayDevice.percentage * 11)
+    return icons[index]
+}
 
     anchors.top: true
     anchors.left: true
@@ -106,7 +122,7 @@ PanelWindow {
             id: clockContainer
             Layout.preferredWidth: clock.width + 20
             Layout.preferredHeight: 30 
-            Layout.alignment: Qt.AlignLeft
+            anchors.centerIn: parent
 
             Rectangle {
                 id: clockBg
@@ -134,7 +150,7 @@ PanelWindow {
 
         Item {
             id: rightModules
-            Layout.preferredWidth: cpu.width + mem.width + 20
+            Layout.preferredWidth: cpu.width + mem.width + bat.width + 35
             Layout.preferredHeight: 30 
             Layout.alignment: Qt.AlignVCenter
 
@@ -149,6 +165,20 @@ PanelWindow {
                 id: contentRow
                 anchors.centerIn: parent
                 spacing: 10
+                Text {
+                    id: bat
+                    text: batIcon() + " " + Math.round(UPower.displayDevice.percentage * 100) + "%"
+                    // Math.round(UPower.displayDevice.timeToEmpty / 3600) :
+                    color: root.colGreen
+                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+
+                    MouseArea {
+                        id: mouseBat
+                        anchors.fill: parent 
+                        hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                    }
+                }
                 Text {
                     id: cpu
                     text: "CPU:" + sysData.cpuUsage + "%"

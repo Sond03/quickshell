@@ -86,6 +86,7 @@ Item {
         }
     }
 
+
     Timer {
         interval: 2000; running: true; repeat: true
         onTriggered: {
