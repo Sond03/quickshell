@@ -17,7 +17,7 @@ PanelWindow {
     property color bgModules: "#1d1e2f"
     property color colYellow: "#e0af68"
     property string fontFamily: "JetBrainsMono Nerd Font"
-    property int fontSize: 16
+    property int fontSize: 14
 
     Modules.Processes { id: sysData }
 
@@ -26,8 +26,8 @@ PanelWindow {
     anchor.window: root 
     isHovered: mouseMem.containsMouse
     procData: sysData.topProcs
-    anchor.rect.x: parentWindow.width - 260
-    anchor.rect.y: parentWindow.height + 8
+    anchor.rect.x: parentWindow.width - 250
+    anchor.rect.y: parentWindow.height + 5
 }
 
     anchors.top: true
@@ -40,8 +40,8 @@ PanelWindow {
     Rectangle {
         id: background
         anchors.fill: parent 
-        anchors.leftMargin: 6
-        anchors.rightMargin: 6
+        anchors.leftMargin: 2
+        anchors.rightMargin: 2
         opacity: 0.75
         radius: 10
         color: root.colBg
