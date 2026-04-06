@@ -1,9 +1,11 @@
 import Quickshell 
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import QtQuick.Controls
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import Quickshell.Services.UPower
 
 import "./modules" as Modules
 
@@ -79,8 +81,6 @@ PanelWindow {
                 height: 22
                 radius: isActive ? width / 4.5  : width / 2
 
-                // border.color: "white"
-                // border.width: 1
 
                 color: mouseArea.containsMouse ? "#F4F4F4" : isActive ? "#2fbde7" : workspace ? "#6f9eb7" : "#1d1e2f"
 
@@ -89,7 +89,6 @@ PanelWindow {
                 Text {
                     text: index +1
                     anchors.centerIn: parent 
-                    // font { family: root.fontFamily; pointSize: 13; bold: true; }
                     font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
                     color: mouseArea.containsMouse ? "#1d1e2f" : "#00FFF" 
                 }
@@ -98,6 +97,7 @@ PanelWindow {
                     id: mouseArea
                     anchors.fill: parent 
                     hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
                     onClicked: Hyprland.dispatch("workspace " + (index + 1))
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                 }
@@ -174,6 +174,20 @@ PanelWindow {
                         id: mouseMem
                         anchors.fill: parent 
                         hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                    }
+                }
+                Text {
+                    id:powerButton
+                    text: "⏻"
+                    color: mousePowerButton.containsMouse ? "#DC143C" : "#2fbde7"
+                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                    MouseArea {
+                        id: mousePowerButton
+                        anchors.fill: parent 
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Quickshell.execDetached(["wlogout"])
                         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                     }
                 }
