@@ -135,7 +135,7 @@ PanelWindow {
         Item { Layout.fillWidth: true }
         Item {
             id: rightModules
-            Layout.preferredWidth: cpu.width + mem.width + 20
+            Layout.preferredWidth: cpu.width + mem.width + powerButton.width + 35
             Layout.preferredHeight: 30 
             Layout.alignment: Qt.AlignVCenter
 
