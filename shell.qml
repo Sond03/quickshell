@@ -1,6 +1,7 @@
 import Quickshell 
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import QtQuick.Controls
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
@@ -111,6 +112,7 @@ function batIcon() {
                     id: mouseArea
                     anchors.fill: parent 
                     hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
                     onClicked: Hyprland.dispatch("workspace " + (index + 1))
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                 }
@@ -150,7 +152,7 @@ function batIcon() {
 
         Item {
             id: rightModules
-            Layout.preferredWidth: cpu.width + mem.width + bat.width + 35
+            Layout.preferredWidth: cpu.width + mem.width + bat.width + powerButton.width + 45
             Layout.preferredHeight: 30 
             Layout.alignment: Qt.AlignVCenter
 
@@ -165,6 +167,8 @@ function batIcon() {
                 id: contentRow
                 anchors.centerIn: parent
                 spacing: 10
+
+
                 Text {
                     id: bat
                     text: batIcon() + " " + Math.round(UPower.displayDevice.percentage * 100) + "%"
@@ -203,6 +207,20 @@ function batIcon() {
                         id: mouseMem
                         anchors.fill: parent 
                         hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                    }
+                }
+                Text {
+                    id:powerButton
+                    text: "⏻"
+                    color: mousePowerButton.containsMouse ? "#DC143C" : "#2fbde7"
+                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                    MouseArea {
+                        id: mousePowerButton
+                        anchors.fill: parent 
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Quickshell.execDetached(["wlogout"])
                         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                     }
                 }
