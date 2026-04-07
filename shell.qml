@@ -67,15 +67,22 @@ PanelWindow {
         spacing: 2
 
         Repeater {
-            model: 5
+            model: {
+                let base = [1, 2, 3, 4, 5];
+                let focused = Hyprland.focusedWorkspace?.id;
+                if (focused > 5) {
+                    base.push(focused);
+                }
+                return base;
+            }
 
             Rectangle {
                 id: workspaceCircle
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredWidth: width
 
-                property var workspace: Hyprland.workspaces.values.find(w => w.id == index + 1)
-                property bool isActive: Hyprland.focusedWorkspace?.id === (index + 1)
+                property var workspace: Hyprland.workspaces.values.find(w => w.id == modelData)
+                property bool isActive: Hyprland.focusedWorkspace?.id === modelData
 
                 width: isActive ? 45 : 30
                 height: 22
@@ -87,7 +94,7 @@ PanelWindow {
                 Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
                 Text {
-                    text: index +1
+                    text: modelData
                     anchors.centerIn: parent 
                     font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
                     color: mouseArea.containsMouse ? "#1d1e2f" : "#00FFF" 
@@ -98,7 +105,7 @@ PanelWindow {
                     anchors.fill: parent 
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch("workspace " + (index + 1))
+                    onClicked: Hyprland.dispatch("workspace " + modelData)
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                 }
             }
@@ -111,12 +118,26 @@ PanelWindow {
             Layout.preferredHeight: 30 
             anchors.centerIn: parent
 
+            Modules.CalendarWidget {
+                id: calendarPopup
+                isHovered: mouseClock.containsMouse 
+            }
+
             Rectangle {
                 id: clockBg
                 anchors.fill: parent
                 radius: 5
                 color: root.bgModules
                 opacity: 1
+
+
+                MouseArea {
+                    id: mouseClock
+                    anchors.fill: parent 
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                }
             }
 
             Text {
