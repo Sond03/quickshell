@@ -139,11 +139,11 @@ function batIcon() {
                 anchors.centerIn: parent
                 color: root.colBlue
                 font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
-                text: Qt.formatDateTime(new Date(), "dd - HH:mm")
+                text: Qt.formatDateTime(new Date(), "dd - HH:mm:ss")
 
                 Timer {
                     interval: 1000; running: true; repeat: true
-                    onTriggered: clock.text = Qt.formatDateTime(new Date(), "dd - HH:mm")
+                    onTriggered: clock.text = Qt.formatDateTime(new Date(), "dd - HH:mm:ss")
                 }
             }
         }
