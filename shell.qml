@@ -8,18 +8,10 @@ import Quickshell.Io
 import Quickshell.Services.UPower
 
 import "./modules" as Modules
+import "./Colors" 
 
 PanelWindow {
     id: root
-    property color colBg: "#1a1b26"
-    property color colFg: "#a9b1d6"
-    property color colMuted: "#444b6a"
-    property color colCyan: "#0db9d7"
-    property color colBlue: "#7aa2f7"
-    property color bgModules: "#1d1e2f"
-    property color colYellow: "#e0af68"
-    property string fontFamily: "JetBrainsMono Nerd Font"
-    property int fontSize: 16
 
     Modules.Processes { id: sysData }
 
@@ -55,7 +47,7 @@ PanelWindow {
         anchors.rightMargin: 6
         opacity: 0.75
         radius: 10
-        color: root.colBg
+        color: Colors.bg
     }
 
     RowLayout {
@@ -89,15 +81,15 @@ PanelWindow {
                 radius: isActive ? width / 4.5  : width / 2
 
 
-                color: mouseArea.containsMouse ? "#F4F4F4" : isActive ? "#2fbde7" : workspace ? "#6f9eb7" : "#1d1e2f"
+                color: mouseArea.containsMouse ? Colors.bg : isActive ? "#2fbde7" : workspace ? "#6f9eb7" : Colors.bg
 
                 Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
                 Text {
                     text: modelData
                     anchors.centerIn: parent 
-                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
-                    color: mouseArea.containsMouse ? "#1d1e2f" : "#00FFF" 
+                    font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+                    color: mouseArea.containsMouse ? Colors.cyan : Colors.fg
                 }
 
                 MouseArea {
@@ -127,7 +119,7 @@ PanelWindow {
                 id: clockBg
                 anchors.fill: parent
                 radius: 5
-                color: root.bgModules
+                color: Colors.bg
                 opacity: 1
 
 
@@ -142,8 +134,8 @@ PanelWindow {
             Text {
                 id: clock
                 anchors.centerIn: parent
-                color: root.colBlue
-                font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                color: Colors.blue
+                font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
                 text: Qt.formatDateTime(new Date(), "dd - HH:mm")
 
                 Timer {
@@ -163,7 +155,7 @@ PanelWindow {
                 id: rightBg
                 anchors.fill: parent
                 radius: 5
-                color: root.bgModules
+                color: Colors.bg
                 opacity: 1
             }
             Row {
@@ -173,8 +165,8 @@ PanelWindow {
                 Text {
                     id: cpu
                     text: "CPU:" + sysData.cpuUsage + "%"
-                    color: root.colYellow
-                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                    color: Colors.yellow
+                    font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
 
                     MouseArea{
                         id: mouseCpu
@@ -187,8 +179,8 @@ PanelWindow {
                 Text {
                     id: mem
                     text: sysData.memUsage 
-                    color: root.colCyan
-                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                    color: Colors.cyan
+                    font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
 
                     MouseArea {
                         id: mouseMem
@@ -200,8 +192,8 @@ PanelWindow {
                 Text {
                     id:powerButton
                     text: "⏻"
-                    color: mousePowerButton.containsMouse ? "#DC143C" : "#2fbde7"
-                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                    color: mousePowerButton.containsMouse ? Colors.crimson : "#fff5f6"
+                    font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
                     MouseArea {
                         id: mousePowerButton
                         anchors.fill: parent 
