@@ -10,6 +10,7 @@ QtObject{
     property color bgModules: "#1d1e2f"
     property color yellow: "#e0af68"
     property color crimson: "#DC143C"
+    property color emerald: "#73daca"
 
     property string fontFamily: "JetBrainsMono Nerd Font"
     property int tiny: 12

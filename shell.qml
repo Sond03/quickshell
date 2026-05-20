@@ -92,6 +92,12 @@ PanelWindow {
                     color: mouseArea.containsMouse ? Colors.cyan : Colors.fg
                 }
 
+                Rectangle {
+                    id: workspaceBg
+                    radius: 5
+                    color: Colors.bg
+                    opacity: 1
+                }
                 MouseArea {
                     id: mouseArea
                     anchors.fill: parent 
@@ -192,7 +198,7 @@ PanelWindow {
                 Text {
                     id:powerButton
                     text: "⏻"
-                    color: mousePowerButton.containsMouse ? Colors.crimson : "#fff5f6"
+                    color: mousePowerButton.containsMouse ? Colors.crimson : Colors.emerald
                     font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
                     MouseArea {
                         id: mousePowerButton
