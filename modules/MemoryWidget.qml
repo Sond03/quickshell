@@ -5,7 +5,7 @@ import "./Processes.qml" as Processes
 
 PopupWindow {
     id: popup
-    width: 250
+    width: 205
     height: 200
     property string fontFamily: "JetBrainsMono Nerd Font"
     property int fontSize: 14
@@ -13,9 +13,10 @@ PopupWindow {
     color: "transparent"
 
     property bool isHovered: false 
+    property bool isPinned: false
     property string procData: ""
 
-    visible: isHovered || localMouse.containsMouse || container.opacity > 0
+    visible: isHovered || isPinned || localMouse.containsMouse || container.opacity > 0
 
     Rectangle {
         id: container
@@ -32,6 +33,8 @@ PopupWindow {
             id: localMouse
             anchors.fill: parent
             hoverEnabled: true
+            onClicked: isPinned = !isPinned
+            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         }
 
         Column {
@@ -40,7 +43,9 @@ PopupWindow {
             spacing: 10
 
             Text {
-                text: "Processes with most usage"
+                text: "Most mem usage"
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
                 color: "#7aa2f7"
                 font { pixelSize: popup.fontSize; bold: true; family: popup.fontFamily }
             }

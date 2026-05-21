@@ -18,19 +18,18 @@ PanelWindow {
     Modules.MemoryWidget {
         id: memPopup
         anchor.window: root 
-        isHovered: mouseMem.containsMouse
+        isHovered: mouseMem.containsMouse || isPinned
         procData: sysData.topProcs
-        anchor.rect.x: parentWindow.width - 260
+        anchor.rect.x: parentWindow.width - 210
         anchor.rect.y: parentWindow.height + 8
     }
 
     Modules.CpuWidget {
         id: cpuPopup
         anchor.window: root 
-        isHovered: mouseCpu.containsMouse
-        anchor.rect.x: parentWindow.width - 260
+        isHovered: mouseCpu.containsMouse || isPinned
+        anchor.rect.x: parentWindow.width - 365
         anchor.rect.y: parentWindow.height + 8
-
     }
 
     anchors.top: true
@@ -179,6 +178,7 @@ PanelWindow {
                         anchors.fill: parent 
                         hoverEnabled: true
                         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                        onClicked: cpuPopup.isPinned = !cpuPopup.isPinned
                     }
                 }
 
@@ -193,6 +193,7 @@ PanelWindow {
                         anchors.fill: parent 
                         hoverEnabled: true
                         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                        onClicked: memPopup.isPinned = !memPopup.isPinned
                     }
                 }
                 Text {
