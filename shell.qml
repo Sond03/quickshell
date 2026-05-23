@@ -102,7 +102,7 @@ PanelWindow {
                     anchors.fill: parent 
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch("workspace " + modelData)
+                    onClicked: Hyprland.dispatch(`hl.dsp.focus({ workspace = ${modelData} })`);
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                 }
             }
