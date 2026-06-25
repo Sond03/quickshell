@@ -2,6 +2,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import "../Colors"
+
 PopupWindow {
     id: popup
     width: 250
@@ -9,8 +11,6 @@ PopupWindow {
     anchor.window: root
     anchor.rect.x: parentWindow.width / 2 - width / 2
     anchor.rect.y: parentWindow.height
-    property string fontFamily: "JetBrainsMono Nerd Font"
-    property int fontSize: 14
 
     color: "transparent"
 
@@ -22,8 +22,8 @@ PopupWindow {
     Rectangle {
         id: container
         anchors.fill: parent
-        color: "#1a1b26"
-        border.color: "#7aa2f7"
+        color: Colors.muted
+        border.color: Colors.blue
         border.width: 1
         radius: 8
 

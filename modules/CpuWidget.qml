@@ -3,16 +3,12 @@ import Quickshell
 import Quickshell.Io
 
 import "./Processes.qml" as Processes 
-
-
-
+import "../Colors/"
 
 PopupWindow {
     id: cpuPopup
     width: 150
     height: 50 + (coreUsages.length * 22)
-    property string fontFamily: "JetBrainsMono Nerd Font"
-    property int fontSize: 14
 
     property var coreUsages: []
     property string coresProc: ""
@@ -71,8 +67,8 @@ PopupWindow {
     Rectangle {
         id: container
         anchors.fill: parent
-        color: "#1a1b26"
-        border.color: "#7aa2f7"
+        color: Colors.bg
+        border.color: Colors.blue
         border.width: 1
         radius: 8
 
@@ -94,8 +90,8 @@ PopupWindow {
 
             Text {
                 text: "Core Usage"  
-                color: "#7aa2f7"
-                font { pixelSize: cpuPopup.fontSize; bold: true; family: cpuPopup.fontFamily }
+                color: Colors.blue
+                font { pixelSize: Colors.small ; bold: true; family: Colors.fontFamily }
                   width: parent.width
                   horizontalAlignment: Text.AlignHCenter
             }
@@ -103,7 +99,7 @@ PopupWindow {
             Rectangle {
                 width: parent.width
                 height: 1
-                color: "#444b6a"
+                color: Colors.muted
             }
             Repeater {
                 model: cpuPopup.coreUsages.length
@@ -113,30 +109,31 @@ PopupWindow {
                     width: 120
 
                     Text {
-                        text: "C" + index + ":"
-                        color: "#7aa2f7"
-                        font { pixelSize: cpuPopup.fontSize - 2; family: cpuPopup.fontFamily }
+                        text: "C" + (index+1)
+                        color: Colors.blue
+                        font { pixelSize: Colors.tiny; family: Colors.fontFamily }
                         width: 24
                     }
                     Rectangle {
                         width: 70
                         height: 10
-                        color: "#2a2b3a"
+                        color: Colors.cpuBar
                         radius: 5
+                        y: 3
                         Rectangle {
                             width: parent.width * (cpuPopup.coreUsages[index] / 100)
                             height: parent.height
                             radius: 5
-                            color: cpuPopup.coreUsages[index] > 80 ? "#f7768e"
-                            : cpuPopup.coreUsages[index] > 50 ? "#e0af68"
-                            : "#9ece6a"
-                            Behavior on width { NumberAnimation { duration: 400 } }
+                            color: cpuPopup.coreUsages[index] > 80 ? Colors.cpuHigh
+                            : cpuPopup.coreUsages[index] > 50 ? Colors.cpuMed
+                            : Colors.cpuLow
+                            Behavior on width { NumberAnimation { duration: 400 } ColorAnimation { duration: 400 }}
                         }
                     }
                     Text {
                         text: (cpuPopup.coreUsages[index] ?? 0) + "%"
-                        color: "#eeeeee"
-                        font { pixelSize: cpuPopup.fontSize - 2; family: cpuPopup.fontFamily }
+                        color: Colors.white
+                        font { pixelSize: Colors.tiny ; family: Colors.fontFamily }
                         width: 36
                     }
                 }

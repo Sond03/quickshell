@@ -80,7 +80,7 @@ PanelWindow {
                 radius: isActive ? width / 4.5  : width / 2
 
 
-                color: mouseArea.containsMouse ? Colors.bg : isActive ? "#2fbde7" : workspace ? "#6f9eb7" : Colors.bg
+                color: mouseArea.containsMouse ? Colors.bg : isActive ? Colors.wsActive : workspace ? Colors.wsPopulated : Colors.bg
 
                 Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
