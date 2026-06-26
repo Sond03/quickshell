@@ -22,7 +22,7 @@ PopupWindow {
     Rectangle {
         id: container
         anchors.fill: parent
-        color: Colors.muted
+        color: Colors.bg
         border.color: Colors.blue
         border.width: 1
         radius: 8
@@ -34,6 +34,14 @@ PopupWindow {
             id: calendarMouse
             anchors.fill: parent
             hoverEnabled: true
+        }
+        AsciiClock{
+            id: clock
+            anchors.horizontalCenter: parent.horizontalCenter 
+            y: 10
+            clock: sysClock
+            digitColor: Colors.blue
+            size: 6
         }
     }
 }

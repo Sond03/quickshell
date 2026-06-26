@@ -14,6 +14,7 @@ PanelWindow {
     id: root
 
     Modules.Processes { id: sysData }
+    SystemClock { id: sysClock }
 
     Modules.MemoryWidget {
         id: memPopup
