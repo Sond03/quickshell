@@ -15,7 +15,7 @@ PopupWindow {
     property bool isPinned: false
     property string procData: ""
 
-    visible: isHovered || isPinned || localMouse.containsMouse || container.opacity > 0
+    visible: isHovered || isPinned || container.opacity > 0
 
     Rectangle {
         id: container
@@ -32,6 +32,7 @@ PopupWindow {
             id: localMouse
             anchors.fill: parent
             hoverEnabled: true
+            enabled: popup.visible
             onClicked: isPinned = !isPinned
             acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         }

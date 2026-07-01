@@ -6,7 +6,7 @@ import "./Processes.qml" as Processes
 import "../Colors/"
 
 PopupWindow {
-    id: cpuPopup
+    id: popup
     width: 150
     height: 50 + (coreUsages.length * 22)
 
@@ -24,7 +24,7 @@ PopupWindow {
     property bool isHovered: false 
     property bool isPinned: false
 
-    visible: isHovered || isPinned || localMouse.containsMouse || container.opacity > 0
+    visible: isHovered || isPinned || container.opacity > 0
 
     property var last: ({})
 
@@ -41,18 +41,18 @@ PopupWindow {
                 let idle = parseFloat(p[4]);
                 let total = p.slice(1).reduce((a, b) => a + parseInt(b), 0);
 
-                if (cpuPopup.last[name]) {
-                    let dIdle = idle - cpuPopup.last[name].idle;
-                    let dTotal = total - cpuPopup.last[name].total;
+                if (popup.last[name]) {
+                    let dIdle = idle - popup.last[name].idle;
+                    let dTotal = total - popup.last[name].total;
                     if (dTotal > 0) {
                         let usage = Math.max(0, Math.min(100, Math.round(100 * (dTotal - dIdle) / dTotal)));
-                        let updated = [...cpuPopup.coreUsages];
+                        let updated = [...popup.coreUsages];
                         let idx = parseInt(name.replace("cpu", ""));
                         updated[idx] = usage;
-                        cpuPopup.coreUsages = updated;
+                        popup.coreUsages = updated;
                     }
                 }
-                cpuPopup.last[name] = { idle: idle, total: total };
+                popup.last[name] = { idle: idle, total: total };
             }
         }
     }
@@ -72,13 +72,14 @@ PopupWindow {
         border.width: 1
         radius: 8
 
-        opacity: (cpuPopup.isHovered) ? 1.0 : 0.0
+        opacity: (popup.isHovered) ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: container.opacity > 0 ? 500 : 200 } }
 
         MouseArea {
             id: localMouse
             anchors.fill: parent
             hoverEnabled: true
+            enabled: popup.visible 
             onClicked: isPinned = !isPinned
             acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         }
@@ -102,7 +103,7 @@ PopupWindow {
                 color: Colors.muted
             }
             Repeater {
-                model: cpuPopup.coreUsages.length
+                model: popup.coreUsages.length
 
                 Row {
                     spacing: 6
@@ -121,17 +122,17 @@ PopupWindow {
                         radius: 5
                         y: 3
                         Rectangle {
-                            width: parent.width * (cpuPopup.coreUsages[index] / 100)
+                            width: parent.width * (popup.coreUsages[index] / 100)
                             height: parent.height
                             radius: 5
-                            color: cpuPopup.coreUsages[index] > 80 ? Colors.cpuHigh
-                            : cpuPopup.coreUsages[index] > 50 ? Colors.cpuMed
+                            color: popup.coreUsages[index] > 80 ? Colors.cpuHigh
+                            : popup.coreUsages[index] > 50 ? Colors.cpuMed
                             : Colors.cpuLow
                             Behavior on width { NumberAnimation { duration: 400 } ColorAnimation { duration: 400 }}
                         }
                     }
                     Text {
-                        text: (cpuPopup.coreUsages[index] ?? 0) + "%"
+                        text: (popup.coreUsages[index] ?? 0) + "%"
                         color: Colors.white
                         font { pixelSize: Colors.tiny ; family: Colors.fontFamily }
                         width: 36

@@ -19,7 +19,7 @@ PanelWindow {
     Modules.MemoryWidget {
         id: memPopup
         anchor.window: root 
-        isHovered: mouseMem.containsMouse || isPinned
+        isHovered: mouseMem.containsMouse || isPinned 
         procData: sysData.topProcs
         anchor.rect.x: parentWindow.width - 210
         anchor.rect.y: parentWindow.height + 8
@@ -31,6 +31,13 @@ PanelWindow {
         isHovered: mouseCpu.containsMouse || isPinned
         anchor.rect.x: parentWindow.width - 365
         anchor.rect.y: parentWindow.height + 8
+    }
+    Modules.CalendarWidget {
+        id: calendarPopup
+        isHovered: mouseClock.containsMouse || isPinned
+        anchor.window: root
+        anchor.rect.x: parentWindow.width / 2 - width / 2
+        anchor.rect.y: parentWindow.height
     }
 
     anchors.top: true
@@ -116,10 +123,6 @@ PanelWindow {
             Layout.preferredHeight: 30 
             anchors.centerIn: parent
 
-            Modules.CalendarWidget {
-                id: calendarPopup
-                isHovered: mouseClock.containsMouse 
-            }
 
             Rectangle {
                 id: clockBg
@@ -133,6 +136,7 @@ PanelWindow {
                     id: mouseClock
                     anchors.fill: parent 
                     hoverEnabled: true
+                    onClicked: calendarPopup.isPinned = !calendarPopup.isPinned
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                 }
             }

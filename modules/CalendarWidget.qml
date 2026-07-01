@@ -8,16 +8,14 @@ PopupWindow {
     id: popup
     width: 250
     height: 200
-    anchor.window: root
-    anchor.rect.x: parentWindow.width / 2 - width / 2
-    anchor.rect.y: parentWindow.height
 
     color: "transparent"
 
     property bool isHovered: false 
+    property bool isPinned: false
     property string procData: ""
 
-    visible: isHovered || calendarMouse.containsMouse  || container.opacity > 0
+    visible: isHovered || isPinned || container.opacity > 0 
 
     Rectangle {
         id: container
@@ -31,9 +29,12 @@ PopupWindow {
         Behavior on opacity { NumberAnimation { duration: container.opacity > 0 ? 500 : 200 } }
 
         MouseArea {
-            id: calendarMouse
+            id: localMouse
             anchors.fill: parent
             hoverEnabled: true
+            enabled: popup.visible 
+            onClicked: isPinned = !isPinned
+            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         }
         AsciiClock{
             id: clock
