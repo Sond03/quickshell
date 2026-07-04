@@ -51,7 +51,7 @@ PanelWindow {
         id: calendarPopup
         anchor.window: root
         isHovered: mouseClock.containsMouse || isPinned
-        anchor.rect.x: parentWindow.width /2 - clock.width - 22
+        anchor.rect.x: parentWindow.width / 2 - width / 2
         anchor.rect.y: parentWindow.height + 5
     }
         
