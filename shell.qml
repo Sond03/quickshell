@@ -21,7 +21,7 @@ PanelWindow {
         anchor.window: root 
         isHovered: mouseMem.containsMouse || isPinned 
         procData: sysData.topProcs
-        anchor.rect.x: parentWindow.width - 210
+        anchor.rect.x: Screen.width - 210
         anchor.rect.y: parentWindow.height + 8
     }
 
@@ -29,7 +29,8 @@ PanelWindow {
         id: cpuPopup
         anchor.window: root 
         isHovered: mouseCpu.containsMouse || isPinned
-        anchor.rect.x: parentWindow.width - 365
+        // anchor.rect.x: parentWindow.width - 365
+        anchor.rect.x: memPopup.anchor.rect.x - width - 5
         anchor.rect.y: parentWindow.height + 8
     }
     Modules.CalendarWidget {
