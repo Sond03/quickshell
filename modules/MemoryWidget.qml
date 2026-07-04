@@ -2,26 +2,26 @@ import QtQuick
 import Quickshell
 
 import "./Processes.qml" as Processes 
+import "../Colors"
 
 PopupWindow {
     id: popup
-    width: 250
-    height: 200
-    property string fontFamily: "JetBrainsMono Nerd Font"
-    property int fontSize: 14
+    implicitWidth: 185
+    implicitHeight: 180
 
     color: "transparent"
 
     property bool isHovered: false 
+    property bool isPinned: false
     property string procData: ""
 
-    visible: isHovered || localMouse.containsMouse || container.opacity > 0
+    visible: isHovered || isPinned || container.opacity > 0
 
     Rectangle {
         id: container
         anchors.fill: parent
-        color: "#1a1b26"
-        border.color: "#7aa2f7"
+        color: Colors.bg
+        border.color: Colors.blue
         border.width: 1
         radius: 8
 
@@ -32,6 +32,9 @@ PopupWindow {
             id: localMouse
             anchors.fill: parent
             hoverEnabled: true
+            enabled: popup.visible
+            onClicked: isPinned = !isPinned
+            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         }
 
         Column {
@@ -40,21 +43,23 @@ PopupWindow {
             spacing: 10
 
             Text {
-                text: "Processes with most usage"
-                color: "#7aa2f7"
-                font { pixelSize: popup.fontSize; bold: true; family: popup.fontFamily }
+                text: "Most mem usage"
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                color: Colors.blue
+                font { pixelSize: Colors.tiny ; bold: true; family: Colors.fontFamily }
             }
 
             Rectangle {
                 width: parent.width
                 height: 1
-                color: "#444b6a"
+                color: Colors.muted
             }
 
             Text {
                 text: popup.procData || "Data parsing...." 
-                color: "#eeeeee" 
-                font { pixelSize: popup.fontSize; bold: true; family: popup.fontFamily }
+                color: Colors.white
+                font { pixelSize: Colors.tiny; bold: true; family: Colors.fontFamily }
                 lineHeight: 1.5
             }
         }

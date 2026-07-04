@@ -8,47 +8,52 @@ import Quickshell.Io
 import Quickshell.Services.UPower
 
 import "./modules" as Modules
+import "./Colors" 
 
 PanelWindow {
     id: root
-    property color colBg: "#1a1b26"
-    property color colFg: "#a9b1d6"
-    property color colMuted: "#444b6a"
-    property color colCyan: "#0db9d7"
-    property color colBlue: "#7aa2f7"
-    property color bgModules: "#1d1e2f"
-    property color colYellow: "#e0af68"
-    property color colGreen: "#a4df9f"
-    property string fontFamily: "JetBrainsMono Nerd Font"
-    property int fontSize: 14
+    anchors.top: true
+    anchors.left: true
+    anchors.right: true
+    implicitHeight: 40
+    color: "transparent"
 
     Modules.Processes { id: sysData }
+    SystemClock { id: sysClock }
 
     Modules.MemoryWidget {
-    id: memPopup
-    anchor.window: root 
-    isHovered: mouseMem.containsMouse
-    procData: sysData.topProcs
-    anchor.rect.x: parentWindow.width - 250
-    anchor.rect.y: parentWindow.height + 5
-}
+        id: memPopup
+        isHovered: mouseMem.containsMouse || isPinned 
+        procData: sysData.topProcs
+        anchor.window: root 
+        anchor.rect.x: Screen.width - 190
+        anchor.rect.y: parentWindow.height + 5
+    }
 
-Modules.CpuWidget{
-    id: cpuPopup
-    anchor.window: root 
-    isHovered: mouseCpu.containsMouse
-    anchor.rect.x: parentWindow.width - 250
-    anchor.rect.y: parentWindow.height + 5
-}
+    Modules.CpuWidget {
+        id: cpuPopup
+        anchor.window: root 
+        isHovered: mouseCpu.containsMouse || isPinned
+        anchor.rect.x: memPopup.anchor.rect.x - width - 5
+        anchor.rect.y: parentWindow.height + 5
+    }
 
-Modules.BatWidget {
-    id: batPopup
-    anchor.window: root
-    isHovered: mouseBat.containsMouse
-    anchor.rect.x: parentWindow.width - 315
-    anchor.rect.y: parentWindow.height + 5
-    
-}
+    Modules.BatWidget {
+        id: batPopup
+        anchor.window: root
+        isHovered: mouseBat.containsMouse 
+        anchor.rect.x: cpuPopup.anchor.rect.x 
+        anchor.rect.y: parentWindow.height + 5
+
+    }
+
+    Modules.CalendarWidget{
+        id: calendarPopup
+        anchor.window: root
+        isHovered: mouseClock.containsMouse || isPinned
+        anchor.rect.x: parentWindow.width /2 - clock.width - 22
+        anchor.rect.y: parentWindow.height + 5
+    }
         
 function batIcon() {
     var icons = ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
@@ -56,11 +61,6 @@ function batIcon() {
     return icons[index]
 }
 
-    anchors.top: true
-    anchors.left: true
-    anchors.right: true
-    implicitHeight: 40
-    color: "transparent"
 
 
     Rectangle {
@@ -70,7 +70,7 @@ function batIcon() {
         anchors.rightMargin: 2
         opacity: 0.75
         radius: 10
-        color: root.colBg
+        color: Colors.bg
     }
 
     RowLayout {
@@ -82,38 +82,51 @@ function batIcon() {
         spacing: 2
 
         Repeater {
-            model: 5
+            model: {
+                let base = [1, 2, 3, 4, 5];
+                let focused = Hyprland.focusedWorkspace?.id;
+                if (focused > 5) {
+                    base.push(focused);
+                }
+                return base;
+            }
 
             Rectangle {
                 id: workspaceCircle
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredWidth: width
 
-                property var workspace: Hyprland.workspaces.values.find(w => w.id == index + 1)
-                property bool isActive: Hyprland.focusedWorkspace?.id === (index + 1)
+                property var workspace: Hyprland.workspaces.values.find(w => w.id == modelData)
+                property bool isActive: Hyprland.focusedWorkspace?.id === modelData
 
                 width: isActive ? 45 : 30
                 height: 22
                 radius: isActive ? width / 4.5  : width / 2
 
 
-                color: mouseArea.containsMouse ? "#F4F4F4" : isActive ? "#2fbde7" : workspace ? "#6f9eb7" : "#1d1e2f"
+                color: mouseArea.containsMouse ? Colors.bg : isActive ? Colors.wsActive : workspace ? Colors.wsPopulated : Colors.bg
 
                 Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
                 Text {
-                    text: index +1
+                    text: modelData
                     anchors.centerIn: parent 
-                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
-                    color: mouseArea.containsMouse ? "#1d1e2f" : "#00FFF" 
+                    font { family: Colors.fontFamily; pixelSize: Colors.small; bold: true }
+                    color: mouseArea.containsMouse ? Colors.cyan : Colors.fg
                 }
 
+                Rectangle {
+                    id: workspaceBg
+                    radius: 5
+                    color: Colors.bg
+                    opacity: 1
+                }
                 MouseArea {
                     id: mouseArea
                     anchors.fill: parent 
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch("workspace " + (index + 1))
+                    onClicked: Hyprland.dispatch(`hl.dsp.focus({ workspace = ${modelData} })`);
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                 }
             }
@@ -126,20 +139,30 @@ function batIcon() {
             Layout.preferredHeight: 30 
             anchors.centerIn: parent
 
+
             Rectangle {
                 id: clockBg
                 anchors.fill: parent
                 radius: 5
-                color: root.bgModules
+                color: Colors.bg
                 opacity: 1
+
+
+                MouseArea {
+                    id: mouseClock
+                    anchors.fill: parent 
+                    hoverEnabled: true
+                    onClicked: calendarPopup.isPinned = !calendarPopup.isPinned
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                }
             }
 
             Text {
                 id: clock
                 anchors.centerIn: parent
-                color: root.colBlue
-                font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
-                text: Qt.formatDateTime(new Date(), "dd - HH:mm:ss")
+                color: Colors.blue
+                font { family: Colors.fontFamily; pixelSize: Colors.small; bold: true }
+                text: Qt.formatDateTime(new Date(), "dd - HH:mm")
 
                 Timer {
                     interval: 1000; running: true; repeat: true
@@ -147,9 +170,7 @@ function batIcon() {
                 }
             }
         }
-
         Item { Layout.fillWidth: true }
-
         Item {
             id: rightModules
             Layout.preferredWidth: cpu.width + mem.width + bat.width + powerButton.width + 45
@@ -160,7 +181,7 @@ function batIcon() {
                 id: rightBg
                 anchors.fill: parent
                 radius: 5
-                color: root.bgModules
+                color: Colors.bg
                 opacity: 1
             }
             Row {
@@ -173,48 +194,51 @@ function batIcon() {
                     id: bat
                     text: batIcon() + " " + Math.round(UPower.displayDevice.percentage * 100) + "%"
                     // Math.round(UPower.displayDevice.timeToEmpty / 3600) :
-                    color: root.colGreen
-                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                    color: Colors.green
+                    font { family: Colors.fontFamily; pixelSize: Colors.small; bold: true }
 
                     MouseArea {
                         id: mouseBat
                         anchors.fill: parent 
                         hoverEnabled: true
+                        onClicked: batPopup.isPinned = !batPopup.isPinned
                         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                     }
                 }
                 Text {
                     id: cpu
                     text: "CPU:" + sysData.cpuUsage + "%"
-                    color: root.colYellow
-                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                    color: Colors.yellow
+                    font { family: Colors.fontFamily; pixelSize: Colors.small; bold: true }
 
-                    MouseArea {
+                    MouseArea{
                         id: mouseCpu
                         anchors.fill: parent 
                         hoverEnabled: true
                         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                        onClicked: cpuPopup.isPinned = !cpuPopup.isPinned
                     }
                 }
 
                 Text {
                     id: mem
                     text: sysData.memUsage 
-                    color: root.colCyan
-                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                    color: Colors.cyan
+                    font { family: Colors.fontFamily; pixelSize: Colors.small; bold: true }
 
                     MouseArea {
                         id: mouseMem
                         anchors.fill: parent 
                         hoverEnabled: true
                         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                        onClicked: memPopup.isPinned = !memPopup.isPinned
                     }
                 }
                 Text {
                     id:powerButton
                     text: "⏻"
-                    color: mousePowerButton.containsMouse ? "#DC143C" : "#2fbde7"
-                    font { family: root.fontFamily; pixelSize: root.fontSize; bold: true }
+                    color: mousePowerButton.containsMouse ? Colors.crimson : Colors.emerald
+                    font { family: Colors.fontFamily; pixelSize: Colors.small; bold: true }
                     MouseArea {
                         id: mousePowerButton
                         anchors.fill: parent 

@@ -3,20 +3,28 @@ import Quickshell
 import Quickshell.Io
 
 import "./Processes.qml" as Processes 
+import "../Colors/"
 
 PopupWindow {
-    id: cpuPopup
-    width: 150
-    height: 200
-    property string fontFamily: "JetBrainsMono Nerd Font"
-    property int fontSize: 14
+    id: popup
+    implicitWidth: 150
+    implicitHeight: 50 + (coreUsages.length * 22)
+
+    property var coreUsages: []
+    property string coresProc: ""
+
+    onCoresProcChanged: {
+        let lines = coresProc.trim().split("\n").filter(l => l !== "");
+        coreUsages = lines.map(l => parseInt(l));
+        coresProc = ""; // reset so next tick overwrites cleanly
+    }
 
     color: "transparent"
 
     property bool isHovered: false 
-    property string coresProc: ""
+    property bool isPinned: false
 
-    visible: isHovered || localMouse.containsMouse || container.opacity > 0
+    visible: isHovered || isPinned || container.opacity > 0
 
     property var last: ({})
 
@@ -26,26 +34,25 @@ PopupWindow {
 
         stdout: SplitParser {
             onRead: data => {
-                let lines = data.trim().split("\n");
-                let result = "";
+                let p = data.trim().split(/\s+/);
+                let name = p[0];
+                if (!name.match(/^cpu[0-9]/)) return;
 
-                for (let line of lines) {
-                    let p = line.split(/\s+/);
-                    let name = p[0];
-                    let idle = parseInt(p[4]);
-                    let total = p.slice(1).reduce((a, b) => a + parseInt(b), 0);
+                let idle = parseFloat(p[4]);
+                let total = p.slice(1).reduce((a, b) => a + parseInt(b), 0);
 
-                    if (last[name]) {
-                        let dIdle = idle - last[name].idle;
-                        let dTotal = total - last[name].total;
-                        if (dTotal > 0) {
-                            let usage = Math.max(0, Math.min(100, Math.round(100 * (dTotal - dIdle) / dTotal)));
-                            result += usage + "%\n";
-                        }
+                if (popup.last[name]) {
+                    let dIdle = idle - popup.last[name].idle;
+                    let dTotal = total - popup.last[name].total;
+                    if (dTotal > 0) {
+                        let usage = Math.max(0, Math.min(100, Math.round(100 * (dTotal - dIdle) / dTotal)));
+                        let updated = [...popup.coreUsages];
+                        let idx = parseInt(name.replace("cpu", ""));
+                        updated[idx] = usage;
+                        popup.coreUsages = updated;
                     }
-                    last[name] = { idle: idle, total: total };
                 }
-                if (result !== "") coresProc = result;
+                popup.last[name] = { idle: idle, total: total };
             }
         }
     }
@@ -60,42 +67,78 @@ PopupWindow {
     Rectangle {
         id: container
         anchors.fill: parent
-        color: "#1a1b26"
-        border.color: "#7aa2f7"
+        color: Colors.bg
+        border.color: Colors.blue
         border.width: 1
         radius: 8
 
-        opacity: (cpuPopup.isHovered) ? 1.0 : 0.0
+        opacity: (popup.isHovered) ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: container.opacity > 0 ? 500 : 200 } }
 
         MouseArea {
             id: localMouse
             anchors.fill: parent
             hoverEnabled: true
+            enabled: popup.visible 
+            onClicked: isPinned = !isPinned
+            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         }
 
         Column {
             anchors.fill: parent
             anchors.margins: 15
-            spacing: 10
+            spacing: 6
 
             Text {
-                text: "Cores"
-                color: "#7aa2f7"
-                font { pixelSize: cpuPopup.fontSize; bold: true; family: cpuPopup.fontFamily }
+                text: "Core Usage"  
+                color: Colors.blue
+                font { pixelSize: Colors.small ; bold: true; family: Colors.fontFamily }
+                  width: parent.width
+                  horizontalAlignment: Text.AlignHCenter
             }
 
             Rectangle {
                 width: parent.width
                 height: 1
-                color: "#444b6a"
+                color: Colors.muted
             }
-            Text {
-                text: cpuPopup.coresProc
-                color: "#eeeeee" 
-                font { pixelSize: cpuPopup.fontSize; bold: true; family: cpuPopup.fontFamily }
-                lineHeight: 1.5
-            }
+            Repeater {
+                model: popup.coreUsages.length
+
+                Row {
+                    spacing: 6
+                    width: 120
+
+                    Text {
+                        text: "C" + (index+1)
+                        color: Colors.blue
+                        font { pixelSize: Colors.tiny; family: Colors.fontFamily }
+                        width: 24
+                    }
+                    Rectangle {
+                        width: 70
+                        height: 10
+                        color: Colors.cpuBar
+                        radius: 5
+                        y: 3
+                        Rectangle {
+                            width: parent.width * (popup.coreUsages[index] / 100)
+                            height: parent.height
+                            radius: 5
+                            color: popup.coreUsages[index] > 80 ? Colors.cpuHigh
+                            : popup.coreUsages[index] > 50 ? Colors.cpuMed
+                            : Colors.cpuLow
+                            Behavior on width { NumberAnimation { duration: 400 } ColorAnimation { duration: 400 }}
+                        }
+                    }
+                    Text {
+                        text: (popup.coreUsages[index] ?? 0) + "%"
+                        color: Colors.white
+                        font { pixelSize: Colors.tiny ; family: Colors.fontFamily }
+                        width: 36
+                    }
+                }
+            } 
         }
     }
 }
