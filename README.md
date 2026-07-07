@@ -1,10 +1,17 @@
 # Quickshell Config
 
 A personal Quickshell configuration for Hyprland on Arch Linux.
+## Preview
+Full bar
+![Bar](https://github.com/user-attachments/assets/e00c3970-6b1e-4ff9-a706-8e412de76b88)
 
-![Preview](https://github.com/user-attachments/assets/e00c3970-6b1e-4ff9-a706-8e412de76b88)
+Widgets
 
-![Preview](https://github.com/user-attachments/assets/ee36798e-231f-4247-8a62-52dbbb3ceda7)
+![Widgets](https://github.com/user-attachments/assets/ee36798e-231f-4247-8a62-52dbbb3ceda7)
+
+Tray menu
+
+![Tray](https://github.com/user-attachments/assets/d560a474-f728-4188-aeee-489fceeef84f)
 
 ## Widgets
 ### Done
