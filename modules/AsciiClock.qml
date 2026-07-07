@@ -87,8 +87,8 @@ RowLayout {
                 delegate: Rectangle {
                     required property int modelData
 
-                    width: size
-                    height: size
+                    implicitWidth: size
+                    implicitHeight: size
                     color: {
                         const p = digit.modelData === ':' ? 10 : Number(digit.modelData);
                         return pattern[p][modelData] === 1 ? digitColor : 'transparent'

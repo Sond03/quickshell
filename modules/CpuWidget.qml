@@ -7,8 +7,8 @@ import "../Colors/"
 
 PopupWindow {
     id: popup
-    width: 150
-    height: 50 + (coreUsages.length * 22)
+    implicitWidth: 150
+    implicitHeight: 50 + (coreUsages.length * 22)
 
     property var coreUsages: []
     property string coresProc: ""

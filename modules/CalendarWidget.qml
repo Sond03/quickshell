@@ -6,8 +6,8 @@ import "../Colors"
 
 PopupWindow {
     id: popup
-    width: 250
-    height: 200
+    implicitWidth: 250
+    implicitHeight: 200
 
     color: "transparent"
 

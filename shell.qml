@@ -1,3 +1,5 @@
+//@ pragma UseQApplication
+
 import Quickshell 
 import Quickshell.Wayland
 import Quickshell.Hyprland
@@ -18,9 +20,9 @@ PanelWindow {
 
     Modules.MemoryWidget {
         id: memPopup
-        anchor.window: root 
         isHovered: mouseMem.containsMouse || isPinned 
         procData: sysData.topProcs
+        anchor.window: root 
         anchor.rect.x: Screen.width - 210
         anchor.rect.y: parentWindow.height + 8
     }
@@ -29,7 +31,6 @@ PanelWindow {
         id: cpuPopup
         anchor.window: root 
         isHovered: mouseCpu.containsMouse || isPinned
-        // anchor.rect.x: parentWindow.width - 365
         anchor.rect.x: memPopup.anchor.rect.x - width - 5
         anchor.rect.y: parentWindow.height + 8
     }
@@ -156,23 +157,73 @@ PanelWindow {
             }
         }
         Item { Layout.fillWidth: true }
+
         Item {
             id: rightModules
-            Layout.preferredWidth: cpu.width + mem.width + powerButton.width + 35
+            Layout.preferredWidth: (hovered||trayOpen) ? moduleExpand : moduleWidth
             Layout.preferredHeight: 30 
             Layout.alignment: Qt.AlignVCenter
 
+            property int expandHover:  15
+            property bool hovered: hoverHandler.hovered
+            property int moduleWidth: contentRow.implicitWidth + 15
+            property int moduleExpand: moduleWidth + expandHover
+            property bool trayOpen: false
+
+            HoverHandler { id: hoverHandler}
+
             Rectangle {
                 id: rightBg
-                anchors.fill: parent
+                anchors.right: parent.right 
+                anchors.verticalCenter: parent.verticalCenter
+                implicitHeight: parent.height
+                width: parent.width
                 radius: 5
                 color: Colors.bg
-                opacity: 1
+
+                Behavior on width {
+                    NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+                }
+
+                Text {
+                    id: leftArrow
+                    text: "❮"
+                    color: Colors.fg
+
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.leftMargin: 2
+
+                    rotation: (arrowHover.hovered||rightModules.trayOpen) ? -90 : 0
+                    opacity: (rightModules.hovered||rightModules.trayOpen) ? 1 : 0
+
+                    Behavior on rotation { NumberAnimation { duration: 150; easing.type: Easing.InOutQuad } }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            rightModules.trayOpen = !rightModules.trayOpen
+                            trayWidget.open = !trayWidget.open 
+                        }
+                    }
+
+                    HoverHandler { id: arrowHover }
+                }
             }
-            Row {
+
+            Modules.TrayWidget{
+                id: trayWidget
+                anchor.window: root 
+                anchor.rect.x: cpuPopup.anchor.rect.x 
+                anchor.rect.y: parentWindow.height + 8
+            }
+            RowLayout {
                 id: contentRow
-                anchors.centerIn: parent
+                anchors.right: parent.right
+                anchors.rightMargin: 8
+                anchors.verticalCenter: parent.verticalCenter
                 spacing: 10
+
                 Text {
                     id: cpu
                     text: "CPU:" + sysData.cpuUsage + "%"
@@ -220,4 +271,5 @@ PanelWindow {
         }
     }
 }
+
 
