@@ -72,8 +72,18 @@ PopupWindow {
         border.width: 1
         radius: 8
 
+        scale: (popup.isHovered) ? 1.0 : 0.85
         opacity: (popup.isHovered) ? 1.0 : 0.0
-        Behavior on opacity { NumberAnimation { duration: container.opacity > 0 ? 500 : 200 } }
+        Behavior on opacity { NumberAnimation { duration: container.opacity > 0 ? 200 : 200 } }
+
+        Behavior on scale{
+            SpringAnimation { 
+                spring: 5
+                damping: 0.4
+                mass: 1
+            }
+        }
+
 
         MouseArea {
             id: localMouse

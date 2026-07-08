@@ -14,7 +14,6 @@ import "./Colors"
 
 PanelWindow {
     id: root
-
     Modules.Processes { id: sysData }
     SystemClock { id: sysClock }
 
@@ -52,72 +51,104 @@ PanelWindow {
     Rectangle {
         id: background
         anchors.fill: parent 
-        anchors.leftMargin: 6
-        anchors.rightMargin: 6
+        anchors.leftMargin: 5
+        anchors.rightMargin: 5
         opacity: 0.75
-        radius: 10
+        radius: 5
         color: Colors.bg
     }
 
+
     RowLayout {
+        id: row
         anchors.fill: background
-        anchors.topMargin: 5 
-        anchors.bottomMargin: 5
-        anchors.leftMargin: 8
-        anchors.rightMargin: 8
-        spacing: 2
 
-        Repeater {
-            model: {
-                let base = [1, 2, 3, 4, 5];
-                let focused = Hyprland.focusedWorkspace?.id;
-                if (focused > 5) {
-                    base.push(focused);
+        Rectangle{
+            id: workspaceContainer
+            implicitHeight: workspaceLayout.implicitHeight + 3
+            implicitWidth: workspaceLayout.implicitWidth + 16
+            color: Colors.bg
+            radius: 5
+            Layout.leftMargin: 5
+            
+            RowLayout {
+                id: workspaceLayout
+                anchors.centerIn: parent
+                spacing: 2
+                
+
+                Repeater {
+                    model: {
+                        let base = [1, 2, 3, 4, 5];
+                        let focused = Hyprland.focusedWorkspace?.id;
+                        if (focused > 5) {
+                            base.push(focused);
+                        }
+                        return base;
+                    }
+
+                    Rectangle {
+                        id: workspaceCircle
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.preferredWidth: width
+                        Layout.preferredHeight: height
+
+                        property var workspace: Hyprland.workspaces.values.find(w => w.id == modelData)
+                        property bool isActive: Hyprland.focusedWorkspace?.id === modelData
+
+                        width: isActive ? 45 : 30
+                        height: 23
+                        radius: isActive ? width / 4.5  : width / 2
+
+
+                        color: mouseArea.containsMouse ? Colors.bg : isActive ? Colors.wsActive : workspace ? Colors.wsPopulated : Colors.bg
+
+                        Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+
+                        Text {
+                            text: modelData
+                            anchors.centerIn: parent 
+                            font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+                            color: mouseArea.containsMouse ? Colors.cyan : Colors.fg
+                        }
+
+                        MouseArea {
+                            id: mouseArea
+                            anchors.fill: parent 
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Hyprland.dispatch(`hl.dsp.focus({ workspace = ${modelData} })`);
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                        }
+                    }
                 }
-                return base;
-            }
+                Text{
+                    padding: 5 
+                    Layout.alignment: Qt.AlignVCenter
+                    id:kitty 
+                    text: ""
+                    color: Colors.blue
+                    property bool kittyBounce: false
 
-            Rectangle {
-                id: workspaceCircle
-                Layout.alignment: Qt.AlignVCenter
-                Layout.preferredWidth: width
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: kitty.kittyBounce = !kitty.kittyBounce
+                    }
 
-                property var workspace: Hyprland.workspaces.values.find(w => w.id == modelData)
-                property bool isActive: Hyprland.focusedWorkspace?.id === modelData
-
-                width: isActive ? 45 : 30
-                height: 22
-                radius: isActive ? width / 4.5  : width / 2
-
-
-                color: mouseArea.containsMouse ? Colors.bg : isActive ? Colors.wsActive : workspace ? Colors.wsPopulated : Colors.bg
-
-                Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-
-                Text {
-                    text: modelData
-                    anchors.centerIn: parent 
-                    font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-                    color: mouseArea.containsMouse ? Colors.cyan : Colors.fg
+                    Loader {
+                        active: kitty.kittyBounce
+                        source: "RuiOgKatniss.qml"
+                    }
                 }
 
-                Rectangle {
-                    id: workspaceBg
-                    radius: 5
-                    color: Colors.bg
-                    opacity: 1
-                }
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent 
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch(`hl.dsp.focus({ workspace = ${modelData} })`);
-                    acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-                }
+    
             }
         }
-        Item { Layout.fillWidth: true }
+        Item {
+            Layout.fillWidth: true 
+        }
 
         Item {
             id: clockContainer
@@ -132,7 +163,6 @@ PanelWindow {
                 radius: 5
                 color: Colors.bg
                 opacity: 1
-
 
                 MouseArea {
                     id: mouseClock
@@ -163,6 +193,7 @@ PanelWindow {
             Layout.preferredWidth: (hovered||trayOpen) ? moduleExpand : moduleWidth
             Layout.preferredHeight: 30 
             Layout.alignment: Qt.AlignVCenter
+            Layout.rightMargin: 5
 
             property int expandHover:  15
             property bool hovered: hoverHandler.hovered
@@ -271,5 +302,3 @@ PanelWindow {
         }
     }
 }
-
-
