@@ -70,7 +70,7 @@ RowLayout {
     spacing: 12
 
     Repeater {
-        model: Qt.formatDateTime(clock.date, "hh:mm")
+        model: Qt.formatDateTime(clock.date, "hh:mm:ss")
 
         delegate: GridLayout {
             id: digit

@@ -28,5 +28,6 @@ QtObject{
     property int small :14
     property int regular: 16
     property int large: 20
+    property int huge: 24
 }
 
