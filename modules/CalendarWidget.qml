@@ -296,7 +296,7 @@ PopupWindow {
                             anchors.centerIn: parent
                             opacity: model.month === grid.month ? 1 : 0
                             text: grid.locale.toString(model.date, "d")
-                            font { family: Colors.fontFamily; pixelSize: Colors.normal; bold: true; underline: isToday }
+                            font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true; underline: isToday }
                             color: isToday ? Colors.cyan : Colors.blue
 
                         }
