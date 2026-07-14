@@ -14,6 +14,7 @@ QtObject{
     property color crimson: "#DC143C"
     property color emerald: "#73daca"
     property color white: "#eeeeee"
+    property color dark: "#1010101F"
 
     property color cpuLow: "#9ece6a"
     property color cpuMed: "#e0af68"

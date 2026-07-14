@@ -34,9 +34,10 @@ PopupWindow {
             }
         }
 
-        RowLayout {
+        GridLayout {
             id: tray
-            spacing: 8
+            rows: 3 
+            columns: 3
             anchors.fill: parent
             anchors.margins: 8
 
@@ -58,9 +59,9 @@ PopupWindow {
                         anchors.fill: parent
                         radius: 6
                         color: trayItem.modelData.active ? Colors.blue : Colors.bg
-                        // Behavior on color {
-                        //     ColorAnimation { duration: 120 }
-                        // }
+                        Behavior on color {
+                            ColorAnimation { duration: 120 }
+                        }
                         
 
                     }
