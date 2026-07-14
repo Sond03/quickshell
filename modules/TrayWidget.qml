@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import Quickshell
-import Quickshell.Io
+
 import "../Colors/"
 
 PopupWindow {

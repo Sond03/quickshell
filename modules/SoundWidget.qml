@@ -2,10 +2,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
 import Quickshell.Services.Pipewire
 import Quickshell.Services.Mpris
-import Quickshell.Wayland
 
 import "../Colors/"
 import "../components/"
@@ -22,7 +20,7 @@ Item {
 
     readonly property real sharedWidth: Math.max(label.implicitWidth + 12, listColumn.implicitWidth + 16)
 
-    Rectangle {
+    Rectangle  {
         id: labelBg
         implicitHeight: label.implicitHeight 
         implicitWidth: wrapper.open ? wrapper.sharedWidth - 8 : label.implicitWidth + 12
@@ -53,7 +51,6 @@ Item {
 
     PopupWindow {
         id: expandedContent
-        visible: wrapper.open
         color: "transparent"
 
         anchor.item: labelBg
@@ -70,7 +67,6 @@ Item {
         Behavior on implicitHeight {
             NumberAnimation { duration: 500; easing.type: Easing.OutCubic }
         }
-
 
         Rectangle {
             anchors.fill: parent

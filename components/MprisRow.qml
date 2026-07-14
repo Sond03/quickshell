@@ -1,9 +1,7 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
-import Qt5Compat.GraphicalEffects
 import Quickshell.Services.Mpris
 
 import "../Colors/"

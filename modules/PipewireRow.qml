@@ -1,9 +1,7 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
-import Quickshell
-import Quickshell.Widgets
 import Quickshell.Services.Pipewire
+
 import "../Colors/"
 import "../components/"
 

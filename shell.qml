@@ -1,13 +1,9 @@
 //@ pragma UseQApplication
 
 import Quickshell 
-import Quickshell.Wayland
 import Quickshell.Hyprland
-import QtQuick.Controls
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Io
-import Quickshell.Services.UPower
 
 import "./modules" as Modules
 import "./Colors" 
