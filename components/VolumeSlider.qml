@@ -36,8 +36,16 @@ Slider {
         border.color: Qt.rgba(0, 0, 0, 0.3)
         border.width: control.hovered || control.pressed ? 1 : 0
 
-        // Behavior on implicitWidth {
-        //     NumberAnimation { duration: 100; easing.type: Easing.OutCubic }
-        // }
+        Behavior on implicitWidth {
+            NumberAnimation { duration: 100; easing.type: Easing.OutCubic }
+        }
+    }
+    WheelHandler {
+        property: "value"
+        rotationScale: 0.001
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        onWheel: {
+            control.moved()
+        }
     }
 }

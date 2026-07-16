@@ -1,0 +1,2 @@
+singleton Holidays 1.0 Holidays.qml
+singleton Audio 1.0 AudioService.qml

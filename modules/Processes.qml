@@ -12,6 +12,7 @@ Item {
     implicitWidth: contentRow.width + 20
     implicitHeight: 30
 
+
     Process {
         id: memProc
         command: ["sh", "-c", "free | grep Mem"]

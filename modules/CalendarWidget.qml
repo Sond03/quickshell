@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import "../Colors"
+import "../services/"
 
 PopupWindow {
     id: popup
@@ -53,6 +54,9 @@ PopupWindow {
             spacing: 15
             property date viewedDate: new Date()
 
+             Component.onCompleted: Holidays.ensureLoadedYear(viewedDate.getFullYear())
+             onViewedDateChanged: Holidays.ensureLoadedYear(viewedDate.getFullYear())
+
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 20
@@ -67,7 +71,7 @@ PopupWindow {
 
                     contentItem: Text {
                         text: leftBtn.text
-                        color: leftBtn.hovered ? "#00f0ff" : Colors.blue
+                        color: leftBtn.hovered ? Colors.cyan : Colors.blue
                         font { family: Colors.fontFamily; pixelSize: Colors.huge; bold: true }
                         horizontalAlignment: Text.AlignHCenter
                         scale:  leftBtnHandler.hovered ? 1.3 : 1
@@ -137,9 +141,7 @@ PopupWindow {
                         id: monthText
                         anchors.centerIn: parent
                         text: Qt.formatDate(column.viewedDate, "MMMM yyyy")
-                        font.pixelSize: 32
-                        font.bold: true
-                        font.family: "JetBrains Mono"
+                        font{ family: Colors.fontFamily; pixelSize: 32 ;bold: false}
                         color: Colors.blue
 
                         scale: monthMouseArea.containsMouse  ? 1.1 : 1
@@ -173,7 +175,7 @@ PopupWindow {
 
                     contentItem: Text {
                         text: rightBtn.text
-                        color: rightBtn.hovered ? "#00f0ff" : Colors.blue
+                        color: rightBtn.hovered ? Colors.cyan : Colors.blue
                         font { family: Colors.fontFamily; pixelSize: Colors.huge; bold: true }
                         horizontalAlignment: Text.AlignHCenter
                         Behavior on scale{
@@ -265,6 +267,8 @@ PopupWindow {
                         model.month === new Date().getMonth() && 
                         model.year === new Date().getFullYear()
 
+                        readonly property bool isHoliday: Holidays.isHoliday(model.date) || model.date.getDay() === 0
+
                         implicitWidth: 45
                         implicitHeight: 45
                         z: box.hovered ? 1 : 0
@@ -295,7 +299,7 @@ PopupWindow {
                             opacity: model.month === grid.month ? 1 : 0
                             text: grid.locale.toString(model.date, "d")
                             font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true; underline: isToday }
-                            color: isToday ? Colors.cyan : Colors.blue
+                            color: isToday ? Colors.cyan : (isHoliday ? Colors.crimson : Colors.blue)
 
                         }
                     }
@@ -305,6 +309,17 @@ PopupWindow {
                     Layout.column: 1
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                }
+                WheelHandler {
+                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                    onWheel: (event) => {
+                        if(event.angleDelta.y > 0 ){
+                            column.viewedDate = new Date(column.viewedDate.getFullYear(), column.viewedDate.getMonth() + 1, 1);
+                        } else if (event.angleDelta.y < 0){
+                            column.viewedDate = new Date(column.viewedDate.getFullYear(), column.viewedDate.getMonth() - 1, 1);
+                        }
+                        control.moved()
+                    }
                 }
             }
         }

@@ -8,12 +8,13 @@ import "../Colors/"
 
 Rectangle {
     id: rowBg
-    required property var modelData
     Layout.fillWidth: true
     Layout.preferredHeight: rowContent.implicitHeight + 12
     implicitWidth: rowContent.implicitWidth + 150
     radius: 6
     color: Colors.fg
+
+    required property var modelData
 
     ColumnLayout {
         id: rowContent
@@ -50,9 +51,9 @@ Rectangle {
                 id: percentText
                 property real animatedVolume: modelData.volume * 100
 
-                Behavior on animatedVolume {
-                    NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
-                }
+                // Behavior on animatedVolume {
+                //     NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+                // }
                 text: Math.round(animatedVolume) + "%"
                 color: Colors.white
                 font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: false }
@@ -70,11 +71,14 @@ Rectangle {
             Layout.fillWidth: true
             spacing: 2
 
-            IconImage {
-                height: 60
-                implicitSize: 50
-                source: modelData.trackArtUrl
-                visible: modelData && modelData.trackArtUrl !== ""
+            ClippingWrapperRectangle {
+                radius: 5
+                IconImage {
+                    height: 60
+                    implicitSize: 50
+                    source: modelData.trackArtUrl
+                    visible: modelData && modelData.trackArtUrl !== ""
+                }
             }
 
             ColumnLayout {
@@ -88,7 +92,7 @@ Rectangle {
                 }
                 MarqueeText  {
                     Layout.fillWidth: true
-                    text: modelData.trackArtist
+                    text: modelData.trackArtist || modelData.trackAlbumArtist
                     color: Colors.emerald
                     font { family: Colors.fontFamily; pixelSize: Colors.small; bold: false }
                 }
@@ -137,8 +141,16 @@ Rectangle {
                 if (totalSeconds <= 0) {
                     return "0:00";
                 }
+
                 var minutes = Math.floor(totalSeconds / 60);
                 var seconds = Math.floor(totalSeconds % 60);
+                var hours = Math.floor(totalSeconds / 3600) + "h";
+                var minHours = Math.floor(totalSeconds % 3600 / 60)
+                if (totalSeconds >= 3600){
+                    return hours + ":" + minHours
+                } else if (totalSeconds >= 600){
+                    return minutes + "m" + ":" + (seconds < 10 ? "0" : "") + seconds
+                }
                 return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
             }
             Text {

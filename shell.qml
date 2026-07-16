@@ -5,16 +5,16 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
-import "./modules" as Modules
+import "./modules"
 import "./Colors" 
 
 ShellRoot { 
     PanelWindow {
         id: root
-        Modules.Processes { id: sysData }
+        Processes { id: sysData }
         SystemClock { id: sysClock }
 
-        Modules.MemoryWidget {
+        MemoryWidget {
             id: memPopup
             isHovered: mouseMem.containsMouse || isPinned 
             procData: sysData.topProcs
@@ -23,14 +23,14 @@ ShellRoot {
             anchor.rect.y: parentWindow.height + 8
         }
 
-        Modules.CpuWidget {
+        CpuWidget {
             id: cpuPopup
             anchor.window: root 
             isHovered: mouseCpu.containsMouse || isPinned
             anchor.rect.x: memPopup.anchor.rect.x - width - 5
             anchor.rect.y: parentWindow.height + 8
         }
-        Modules.CalendarWidget {
+        CalendarWidget {
             id: calendarPopup
             isHovered: mouseClock.containsMouse || isPinned
             anchor.window: root
@@ -139,7 +139,8 @@ ShellRoot {
                             source: "RuiOgKatniss.qml"
                         }
                     }
-                    Modules.SoundWidget{}
+
+                    SoundWidget{ }
                 }
             }
             Item {
@@ -237,7 +238,7 @@ ShellRoot {
                     }
                 }
 
-                Modules.TrayWidget{
+                TrayWidget{
                     id: trayWidget
                     anchor.window: root 
                     anchor.rect.x: cpuPopup.anchor.rect.x 

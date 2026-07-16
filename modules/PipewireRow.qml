@@ -4,6 +4,7 @@ import Quickshell.Services.Pipewire
 
 import "../Colors/"
 import "../components/"
+import "../services/"
 
 Rectangle {
     id: rowBg
@@ -14,8 +15,6 @@ Rectangle {
     radius: 6
     color: Colors.fg
     property string label: ""
-
-    PwObjectTracker { objects: [modelData] }
 
     GridLayout {
         id: rowContent
@@ -37,9 +36,9 @@ Rectangle {
 
             Text {
                 id:textInput
-                text: (modelData?.nickname || modelData?.description || modelData?.name || "")
+                text: (modelData.nickname || modelData.description || modelData.name || "")
                 color: Colors.cyan
-                font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: false }
+                font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: false; capitalization: Font.Capitalize }
             }
         }
 
@@ -95,9 +94,9 @@ Rectangle {
             Text {
                 id: muted
                 anchors.centerIn: parent
-                text: modelData.isSink ? (modelData.audio.muted ? "" : "") : (modelData.audio.muted ? "" : "")
+                text: modelData.isSink ? (Audio.volumeIcon(modelData)) : (modelData.audio.muted ? "󰍭" : "󰍬")
                 color: muteArea.containsMouse ? Colors.crimson : Colors.blue
-                font { family: Colors.fontFamily; pixelSize: Colors.small; bold: false }
+                font { family: Colors.fontFamily; pixelSize: Colors.large; bold: false }
 
                 Behavior on color {
                     ColorAnimation { duration: 120 }
