@@ -1,10 +1,11 @@
 import QtQuick
 import Quickshell
+import Quickshell.Wayland
 
 import "./Processes.qml" as Processes 
 import "../Colors"
 
-PopupWindow {
+PanelWindow {
     id: popup
     implicitWidth: 205
     implicitHeight: 200
@@ -16,6 +17,18 @@ PopupWindow {
     property string procData: ""
 
     visible: isHovered || isPinned || container.opacity > 0
+
+    anchors{
+        top: true
+        right:true
+    }
+    margins{
+        right: 5
+    }
+
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "memoryWidget:quickshell"
+    exclusionMode: ExclusionMode.Normal
 
     Rectangle {
         id: container

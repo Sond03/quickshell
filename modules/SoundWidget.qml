@@ -17,7 +17,7 @@ Item {
     implicitWidth: labelBg.width
 
     property bool open: false
-    property real closeDelay: 500
+    property real closeDelay: 250
     property real dropdownExtraHeight: 0
 
     readonly property real sharedWidth: Math.max( label.implicitWidth + 12, (contentLoader.item ? contentLoader.item.implicitWidth : 0) + 16)
@@ -30,7 +30,7 @@ Item {
         radius: 5
 
         Behavior on implicitWidth {
-            NumberAnimation { duration: 500; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
         }
 
         RowLayout {
@@ -179,46 +179,55 @@ Item {
         anchor.rect.y: labelBg.height
         anchor.edges: Edges.Bottom | Edges.Left
 
-        implicitWidth: wrapper.open ? wrapper.sharedWidth : 1
-        implicitHeight: wrapper.open && contentLoader.item ? contentLoader.item.implicitHeight + 16 : 1
+        implicitWidth: wrapper.sharedWidth 
+        implicitHeight: extend && contentLoader.item ? contentLoader.item.implicitHeight + 16 : 1
 
-        Behavior on implicitWidth {
-            NumberAnimation { duration: 500; easing.type: Easing.OutCubic }
-        }
+        property bool extend: false
+
         Behavior on implicitHeight {
-            NumberAnimation { duration: 500; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+        }
+        Timer {
+            id: extendTimer
+            interval: 250
+            onTriggered: expandedContent.extend = true
         }
 
-        // Rectangle {
-        //     anchors.top: parent.top
-        //     color: Colors.bg
-        //     height: 15
-        //     width: parent.width 
-        // }
+        Canvas {
+            id: shapeCanvas
+            anchors.top: parent.top
+            width: parent.width + 100
+            anchors.topMargin: 4
+            height: 40
+            property int rSide: 15          // radius for the box's bottom corners
+            property real boxLeftFrac: 0.037 // where the box's left wall sits (fraction of width)
+            property real boxRightFrac: 0.73 // where the box's right wall sits
+            property real curveSpan: 20      // how much horizontal room the curve gets
 
-        // Shape {
-        //     id: spacerShape
-        //     width: parent.width 
-        //     height: 15
-        //     property int radius: 8
-        //     ShapePath {
-        //         fillColor: Colors.crimson
-        //         strokeWidth: 0
-        //         startX: 0; startY: 0
-        //         PathLine { x: (spacerShape.width / 2) - spacerShape.radius; y: 0 }
-        //         PathArc {
-        //             x: (spacerShape.width / 2) + spacerShape.radius
-        //             y: 0
-        //             radiusX: spacerShape.radius
-        //             radiusY: spacerShape.radius
-        //             direction: PathArc.Counterclockwise
-        //         }
-        //         PathLine { x: spacerShape.width; y: 0 }
-        //         PathLine { x: spacerShape.width; y: spacerShape.height }
-        //         PathLine { x: 0; y: spacerShape.height }
-        //         PathLine { x: 0; y: 0 }
-        //     }
-        // } 
+            onPaint: {
+                var ctx = getContext("2d");
+                ctx.reset();
+                ctx.fillStyle = Colors.bg;
+
+                var w = width;
+                var h = height;
+                var boxLeft = w * boxLeftFrac;
+                var boxRight = w * boxRightFrac;
+                var r = Math.min(rSide, h);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(boxLeft - curveSpan, 0); // smooth curve down into the box's left wall
+                ctx.quadraticCurveTo(boxLeft, 0, boxLeft, h - r); // rounded bottom-left corner
+                ctx.quadraticCurveTo(boxLeft, h, boxLeft + r, h);
+                ctx.lineTo(boxRight - r, h); // rounded bottom-right corner
+                ctx.quadraticCurveTo(boxRight, h, boxRight, h - r); // smooth curve back up to the top line
+                ctx.quadraticCurveTo(boxRight, 0, boxRight + curveSpan, 0);
+                ctx.lineTo(w, 0);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
 
         Rectangle {
             id: mainRect
@@ -228,9 +237,11 @@ Item {
             topLeftRadius: 0
             topRightRadius: 0
             anchors.topMargin: 4
-            // anchors.leftMargin: 15
-            // anchors.rightMargin: 15
+            anchors.leftMargin: 15
+            anchors.rightMargin: 8
             // for when i fix the concave radius box above
+            opacity: expandedContent.extend ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 150 } }
 
             Loader {
                 id: contentLoader
@@ -260,13 +271,13 @@ Item {
                             visible: Pipewire.defaultAudioSource !== null
                             label: " Input"
                         }
-                        Repeater{
-                            model: Audio.streams
-                            delegate: PipewireRow{}
-                        }
                         Repeater {
                             model: Audio.players
                             delegate: MprisRow { }
+                        }
+                        Repeater{
+                            model: Audio.streams
+                            delegate: PipewireRow{}
                         }
                     }
                 }
@@ -285,7 +296,10 @@ Item {
         if (open) {
             hideTimer.stop()
             expandedContent.visible = true
+            extendTimer.restart()
         } else {
+            extendTimer.stop()
+            expandedContent.extend = false
             hideTimer.start()
         }
     }

@@ -1,17 +1,26 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
+import Quickshell.Hyprland
 
 import "./Processes.qml" as Processes 
 import "../Colors/"
 
-PopupWindow {
+PanelWindow {
     id: popup
     implicitWidth: 150
     implicitHeight: 50 + (coreUsages.length * 22)
 
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "cpuWidget:quickshell"
+    exclusionMode: ExclusionMode.Normal
+
     property var coreUsages: []
     property string coresProc: ""
+    property bool isHovered: false 
+    property bool isPinned: false
+    property var last: ({})
 
     onCoresProcChanged: {
         let lines = coresProc.trim().split("\n").filter(l => l !== "");
@@ -21,12 +30,26 @@ PopupWindow {
 
     color: "transparent"
 
-    property bool isHovered: false 
-    property bool isPinned: false
-
     visible: isHovered || isPinned || container.opacity > 0
 
-    property var last: ({})
+
+    anchors{
+        top: true
+        right:true
+    }
+    margins{
+        right: 205 + 5 + 3
+    }
+    HyprlandFocusGrab{
+        active: popup.isOpen
+        windows: [popup]
+        onCleared: popup.isOpen = !popup.isOpen
+    }
+
+    Shortcut {
+        sequence: "Escape"
+        onActivated: popup.isOpen = !popup.isOpen
+    }
 
     Process {
         id: coresProcGrabber
@@ -138,7 +161,7 @@ PopupWindow {
                             color: popup.coreUsages[index] > 80 ? Colors.cpuHigh
                             : popup.coreUsages[index] > 50 ? Colors.cpuMed
                             : Colors.cpuLow
-                            Behavior on width { NumberAnimation { duration: 400 } ColorAnimation { duration: 400 }}
+                            Behavior on implicitWidth { NumberAnimation { duration: 400 } ColorAnimation { duration: 400 }}
                         }
                     }
                     Text {

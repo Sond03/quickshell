@@ -9,33 +9,34 @@ import "./modules"
 import "./Colors" 
 
 ShellRoot { 
+    readonly property var alignments: Qt
     PanelWindow {
         id: root
         Processes { id: sysData }
         SystemClock { id: sysClock }
+        
 
         MemoryWidget {
             id: memPopup
             isHovered: mouseMem.containsMouse || isPinned 
             procData: sysData.topProcs
-            anchor.window: root 
-            anchor.rect.x: Screen.width - 210
-            anchor.rect.y: parentWindow.height + 8
+            // anchor.window: root 
+            // anchor.rect.x: Screen.width - 210
+            // anchor.rect.y: parentWindow.height + 8
+            CpuWidget {
+                id: cpuPopup
+                isHovered: mouseCpu.containsMouse || isPinned
+                // anchor.window: root 
+                // anchor.rect.x: memPopup.anchor.rect.x - width - 5
+                // anchor.rect.y: parentWindow.height + 8
+            }
         }
 
-        CpuWidget {
-            id: cpuPopup
-            anchor.window: root 
-            isHovered: mouseCpu.containsMouse || isPinned
-            anchor.rect.x: memPopup.anchor.rect.x - width - 5
-            anchor.rect.y: parentWindow.height + 8
-        }
         CalendarWidget {
             id: calendarPopup
-            isHovered: mouseClock.containsMouse || isPinned
-            anchor.window: root
-            anchor.rect.x: parentWindow.width / 2 - width / 2
-            anchor.rect.y: parentWindow.height
+            // anchor.window: root
+            // anchor.rect.x: parentWindow.width / 2 - width / 2
+            // anchor.rect.y: parentWindow.height
         }
 
         anchors.top: true
@@ -72,7 +73,6 @@ ShellRoot {
                     id: workspaceLayout
                     anchors.centerIn: parent
                     spacing: 2
-
 
                     Repeater {
                         model: {
@@ -163,9 +163,12 @@ ShellRoot {
                     MouseArea {
                         id: mouseClock
                         anchors.fill: parent 
-                        hoverEnabled: true
-                        onClicked: calendarPopup.isPinned = !calendarPopup.isPinned
+                        hoverEnabled:true
                         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                        onClicked: {
+                            calendarPopup.active = true
+                            calendarPopup.item.isOpen = !calendarPopup.item.isOpen
+                        }
                     }
                 }
 
@@ -230,7 +233,7 @@ ShellRoot {
                             anchors.fill: parent
                             onClicked: {
                                 rightModules.trayOpen = !rightModules.trayOpen
-                                trayWidget.open = !trayWidget.open 
+                                trayWidget.isOpen = !trayWidget.isOpen 
                             }
                         }
 
@@ -240,9 +243,13 @@ ShellRoot {
 
                 TrayWidget{
                     id: trayWidget
-                    anchor.window: root 
-                    anchor.rect.x: cpuPopup.anchor.rect.x 
-                    anchor.rect.y: parentWindow.height + 8
+                    onVisibleChanged: {
+                        if (!visible) {
+                            isOpen = false
+                            rightModules.trayOpen = false
+                        }
+                    }
+
                 }
                 RowLayout {
                     id: contentRow
