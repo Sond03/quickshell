@@ -40,16 +40,6 @@ PanelWindow {
     margins{
         right: 205 + 5 + 3
     }
-    HyprlandFocusGrab{
-        active: popup.isOpen
-        windows: [popup]
-        onCleared: popup.isOpen = !popup.isOpen
-    }
-
-    Shortcut {
-        sequence: "Escape"
-        onActivated: popup.isOpen = !popup.isOpen
-    }
 
     Process {
         id: coresProcGrabber

@@ -4,58 +4,33 @@ import Quickshell
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Wayland
 
 import "./modules"
 import "./Colors" 
+import "./components/notification/"
 
 ShellRoot { 
-    readonly property var alignments: Qt
     PanelWindow {
         id: root
-        Processes { id: sysData }
-        SystemClock { id: sysClock }
-        
-
-        MemoryWidget {
-            id: memPopup
-            isHovered: mouseMem.containsMouse || isPinned 
-            procData: sysData.topProcs
-            // anchor.window: root 
-            // anchor.rect.x: Screen.width - 210
-            // anchor.rect.y: parentWindow.height + 8
-            CpuWidget {
-                id: cpuPopup
-                isHovered: mouseCpu.containsMouse || isPinned
-                // anchor.window: root 
-                // anchor.rect.x: memPopup.anchor.rect.x - width - 5
-                // anchor.rect.y: parentWindow.height + 8
-            }
-        }
-
-        CalendarWidget {
-            id: calendarPopup
-            // anchor.window: root
-            // anchor.rect.x: parentWindow.width / 2 - width / 2
-            // anchor.rect.y: parentWindow.height
-        }
-
-        anchors.top: true
-        anchors.left: true
-        anchors.right: true
+        anchors { top:true; left: true; right: true }
         implicitHeight: 40
         color: "transparent"
 
+        WlrLayershell.layer: WlrLayer.Overlay
+        WlrLayershell.namespace: "root:quickshell"
+        
+        Processes { id: sysData }
 
         Rectangle {
             id: background
             anchors.fill: parent 
             anchors.leftMargin: 5
             anchors.rightMargin: 5
-            opacity: 0.75
+            opacity: 0.85
             radius: 5
             color: Colors.bg
         }
-
 
         RowLayout {
             id: row
@@ -69,8 +44,7 @@ ShellRoot {
                 radius: 5
                 Layout.leftMargin: 5
 
-                RowLayout {
-                    id: workspaceLayout
+                RowLayout { id: workspaceLayout
                     anchors.centerIn: parent
                     spacing: 2
 
@@ -139,13 +113,10 @@ ShellRoot {
                             source: "RuiOgKatniss.qml"
                         }
                     }
-
                     SoundWidget{ }
                 }
             }
-            Item {
-                Layout.fillWidth: true 
-            }
+            Item { Layout.fillWidth: true }
 
             Item {
                 id: clockContainer
@@ -184,6 +155,7 @@ ShellRoot {
                         onTriggered: clock.text = Qt.formatDateTime(new Date(), "dd - HH:mm")
                     }
                 }
+                CalendarWidget { id: calendarPopup }
             }
             Item { Layout.fillWidth: true }
 
@@ -271,6 +243,10 @@ ShellRoot {
                             acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                             onClicked: cpuPopup.isPinned = !cpuPopup.isPinned
                         }
+                        CpuWidget {
+                            id: cpuPopup
+                            isHovered: mouseCpu.containsMouse || isPinned
+                        }
                     }
 
                     Text {
@@ -285,6 +261,11 @@ ShellRoot {
                             hoverEnabled: true
                             acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                             onClicked: memPopup.isPinned = !memPopup.isPinned
+                        }
+                        MemoryWidget {
+                            id: memPopup
+                            isHovered: mouseMem.containsMouse || isPinned 
+                            procData: sysData.topProcs
                         }
                     }
                     Text {
@@ -305,4 +286,5 @@ ShellRoot {
             }
         }
     }
+    NotificationWindow{ }
 }
