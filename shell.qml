@@ -17,7 +17,7 @@ ShellRoot {
         implicitHeight: 40
         color: "transparent"
 
-        WlrLayershell.layer: WlrLayer.Overlay
+        WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.namespace: "root:quickshell"
         
         Processes { id: sysData }
