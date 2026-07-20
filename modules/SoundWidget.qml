@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Hyprland
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
@@ -21,6 +22,17 @@ Item {
     property real dropdownExtraHeight: 0
 
     readonly property real sharedWidth: Math.max( label.implicitWidth + 12, (contentLoader.item ? contentLoader.item.implicitWidth : 0) + 16)
+
+    HyprlandFocusGrab{
+        active: wrapper.open
+        windows: [sinkComboComponent]
+        onCleared: wrapper.open = !wrapper.open
+    }
+
+    Shortcut {
+        sequence: "Escape"
+        onActivated: wrapper.open = !wrapper.open
+    }
 
     Rectangle  {
         id: labelBg

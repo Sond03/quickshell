@@ -18,7 +18,6 @@ ShellRoot {
         color: "transparent"
 
         WlrLayershell.layer: WlrLayer.Top
-        WlrLayershell.namespace: "root:quickshell"
         
         Processes { id: sysData }
 
@@ -27,7 +26,7 @@ ShellRoot {
             anchors.fill: parent 
             anchors.leftMargin: 5
             anchors.rightMargin: 5
-            opacity: 0.85
+            opacity: 0.75
             radius: 5
             color: Colors.bg
         }
@@ -128,14 +127,17 @@ ShellRoot {
                     id: clockBg
                     anchors.fill: parent
                     radius: 5
-                    color: Colors.bg
+                    color: mouseClock.containsMouse ? Qt.darker(Colors.bg, 1.1) : Colors.bg
                     opacity: 1
+
+                    Behavior on color { ColorAnimation { duration: 120 } }
 
                     MouseArea {
                         id: mouseClock
                         anchors.fill: parent 
                         hoverEnabled:true
                         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                        cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             calendarPopup.active = true
                             calendarPopup.item.isOpen = !calendarPopup.item.isOpen

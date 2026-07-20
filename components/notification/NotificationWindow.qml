@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Quickshell.Wayland
 import Quickshell.Services.Notifications
 import QtQuick.Controls
+import Quickshell.Hyprland
 import Quickshell.Widgets
 import qs.Colors
 import qs.services
@@ -132,6 +133,20 @@ PanelWindow {
                                 onAccepted: {
                                     notifCard.modelData.sendInlineReply(replyField.text)
                                     replyField.clear()
+                                }
+                            }
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.LeftButton
+                            cursorShape: Qt.PointingHandCursor
+                            z: -1
+                            onClicked: {
+                                const className = notifCard.modelData.appName
+                                if (className) {
+                                    Hyprland.dispatch(`hl.dsp.focus({ window = "class:^(${className})$" })`) & notifCard.modelData.dismiss()
+                                } else {
+                                    notifCard.modelData.dismiss()
                                 }
                             }
                         }
