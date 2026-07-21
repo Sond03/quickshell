@@ -151,7 +151,7 @@ PanelWindow {
                             color: popup.coreUsages[index] > 80 ? Colors.cpuHigh
                             : popup.coreUsages[index] > 50 ? Colors.cpuMed
                             : Colors.cpuLow
-                            Behavior on implicitWidth { NumberAnimation { duration: 400 } ColorAnimation { duration: 400 }}
+                            Behavior on width { NumberAnimation { duration: 400 } ColorAnimation { duration: 400 }}
                         }
                     }
                     Text {
