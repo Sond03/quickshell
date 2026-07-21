@@ -24,11 +24,13 @@ PanelWindow {
     margins {
         right: 225
     }
-    HyprlandFocusGrab{
-        active: popup.isOpen
-        windows: [popup]
-        onCleared: popup.isOpen = !popup.isOpen
-    }
+
+    // HyprlandFocusGrab{
+    //     active: popup.isOpen
+    //     windows: [popup]
+    //     onCleared: popup.isOpen = !popup.isOpen
+    // }
+    // need to implement it so it doesn't close the menus 
 
     Shortcut {
         sequence: "Escape"
@@ -107,7 +109,7 @@ PanelWindow {
                                     const pos = mapToItem(popup.contentItem, mouse.x, mouse.y)
                                     menuAnchor.anchor.rect.x = pos.x
                                     menuAnchor.anchor.rect.y = pos.y
-                                    menuAnchor.isOpen()
+                                    menuAnchor.open()
                                 } else {
                                     trayItem.modelData.activate()
                                 }
