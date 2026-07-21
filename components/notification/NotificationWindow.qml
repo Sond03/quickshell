@@ -120,9 +120,10 @@ PanelWindow {
                                 visible: text != ""
                                 text: notifCard.modelData.body
                                 color: Colors.white
-                                font { family: Colors.fontFamily; pixelSize: Colors.small; }
+                                font { family: Colors.fontFamily; pixelSize: Colors.small; bold: false}
                                 wrapMode: Text.WordWrap
                             }
+
                             TextFieldStyled {
                                 id: replyField
                                 Layout.fillWidth: true
@@ -136,18 +137,18 @@ PanelWindow {
                                 }
                             }
                         }
-                        MouseArea {
-                            anchors.fill: parent
-                            acceptedButtons: Qt.LeftButton
-                            cursorShape: Qt.PointingHandCursor
-                            z: -1
-                            onClicked: {
-                                const className = notifCard.modelData.appName
-                                if (className) {
-                                    Hyprland.dispatch(`hl.dsp.focus({ window = "class:^(${className})$" })`) & notifCard.modelData.dismiss()
-                                } else {
-                                    notifCard.modelData.dismiss()
-                                }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.LeftButton
+                        cursorShape: Qt.PointingHandCursor
+                        z: -1
+                        onClicked: {
+                            const className = notifCard.modelData.appName
+                            if (className) {
+                                Hyprland.dispatch(`hl.dsp.focus({ window = "class:^(${className})$" })`) & notifCard.modelData.dismiss()
+                            } else {
+                                notifCard.modelData.dismiss()
                             }
                         }
                     }
