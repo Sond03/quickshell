@@ -9,11 +9,14 @@ import Quickshell.Hyprland
 import "../Colors/"
 
 PanelWindow {
+    property bool isOpen: false
+    property bool anyMenuOpen: false
+
     id: popup
     color: "transparent"
     implicitHeight: (contentLoader.item?.implicitHeight ?? 0) + 24
     implicitWidth: (contentLoader.item?.implicitWidth ?? 0) + 20
-    property bool isOpen: false
+
     visible: isOpen
 
     anchors{
@@ -25,16 +28,25 @@ PanelWindow {
         right: 225
     }
 
-    // HyprlandFocusGrab{
-    //     active: popup.isOpen
-    //     windows: [popup]
-    //     onCleared: popup.isOpen = !popup.isOpen
-    // }
-    // need to implement it so it doesn't close the menus 
+    HyprlandFocusGrab {
+        active: popup.isOpen && !popup.anyMenuOpen
+        windows: [popup]
+        onCleared: {
+            if (!popup.anyMenuOpen) {
+                popup.isOpen = false
+            }
+        }
+    }
 
     Shortcut {
+        id: escapeSequence
         sequence: "Escape"
-        onActivated: popup.isOpen = !popup.isOpen
+        onActivated: {
+            if (popup.anyMenuOpen) {
+                return;
+            }
+            popup.isOpen = false;
+        }
     }
 
     WlrLayershell.layer: WlrLayer.Overlay
@@ -82,6 +94,16 @@ PanelWindow {
                             id: menuAnchor
                             menu: trayItem.modelData.menu
                             anchor.window: popup
+
+                            onVisibleChanged: {
+                                if (visible) {
+                                    popup.anyMenuOpen = true
+                                } else {
+                                    Qt.callLater(() => {
+                                        popup.anyMenuOpen = false
+                                    })
+                                }
+                            }
                         }
 
                         Rectangle {
