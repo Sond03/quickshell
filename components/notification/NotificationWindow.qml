@@ -13,11 +13,11 @@ import qs.components
 PanelWindow {
     id: root
     implicitWidth: 300
-    implicitHeight: Math.max(1, notifLoader.item ? notifLoader.item.implicitHeight : 0)
+    // implicitHeight: Math.max(1, notifLoader.item ? notifLoader.item.implicitHeight : 0)
+    implicitHeight: 800
     color: "transparent"
 
     property var notifications: Notifications.notifications
-    property bool open: notifications.length > 0
 
     anchors{ right: true; top: true }
     margins{ right: 15; top: 15 }
@@ -33,19 +33,25 @@ PanelWindow {
         active: true
         asynchronous: false
 
-        sourceComponent: ColumnLayout {
-            id: column
-            width: root.width
-            spacing: 10
 
-            Repeater{ 
-                model: root.notifications
+        sourceComponent: ListView {
+            id: notifList
+            anchors.fill: parent
+            width: root.width
+            model: root.notifications
+            spacing: 10
+            interactive: false
+
+            displaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
+            remove: Transition { NumberAnimation { property: "x"; to: 350; duration: 350; easing.type: Easing.OutCubic } }
+            removeDisplaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
+
 
                 delegate: Rectangle {
                     id: notifCard
                     required property var modelData
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: row.implicitHeight + 20
+                    width: notifList.width
+                    height: row.implicitHeight + 20
                     radius: 5
                     color: Colors.bg
                     border {
@@ -87,9 +93,8 @@ PanelWindow {
                                     width: 22
                                     height: 22
                                     radius: 5
-                                    color: dismiss.containsMouse
-                                    ? Qt.rgba(1, 1, 1, 0.08)
-                                    : "transparent"
+                                    color: dismiss.containsMouse ? Qt.rgba(1, 1, 1, 0.08) : "transparent"
+                                    antialiasing: true
 
                                     Behavior on color {
                                         ColorAnimation {
@@ -109,7 +114,7 @@ PanelWindow {
                                         id: dismiss
                                         anchors.fill: parent
                                         hoverEnabled: true
-                                        onClicked: notifCard.modelData.dismiss()
+                                        onClicked: notifCard.closing = true
                                     }
                                 }
                             }
@@ -146,14 +151,20 @@ PanelWindow {
                         onClicked: {
                             const className = notifCard.modelData.appName
                             if (className) {
-                                Hyprland.dispatch(`hl.dsp.focus({ window = "class:^(${className})$" })`) & notifCard.modelData.dismiss()
-                            } else {
-                                notifCard.modelData.dismiss()
+                                Hyprland.dispatch(`hl.dsp.focus({ window = "class:^(${className})$" })`)
                             }
+                            modelData.dismiss()
                         }
+                    }
+                    Timer{
+                        running: true
+                        repeat: true
+                        interval: 5000
+
+                        onTriggered: modelData.dismiss()
                     }
                 }
             }
         }
     }
-}
+
