@@ -27,6 +27,10 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.keyboardFocus: WlrLayershell.OnDemand
 
+    mask: Region {
+        item: notifList
+    }
+
     Loader {
         id: notifLoader
         anchors.fill: parent
@@ -36,8 +40,8 @@ PanelWindow {
 
         sourceComponent: ListView {
             id: notifList
-            anchors.fill: parent
             width: root.width
+            height:Math.min(contentHeight, root.implicitHeight)
             model: root.notifications
             spacing: 10
             interactive: false
