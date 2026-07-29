@@ -4,8 +4,10 @@ import QtQuick.Layouts
 import Quickshell.Wayland
 import Quickshell.Services.Notifications
 import QtQuick.Controls
+import Quickshell.Io
 import Quickshell.Hyprland
 import Quickshell.Widgets
+
 import qs.Colors
 import qs.services
 import qs.components
@@ -28,12 +30,26 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrLayershell.OnDemand
 
     mask: Region {
-        item: notifList
+        item: notifLoader.item 
+    }
+
+    IpcHandler {
+        id: ipc
+        target: "history"
+        
+        function toggle() {
+            history.active = !history.active
+        }
+    }
+
+    LazyLoader{
+        id: history
+        active: false
+        source: "NotificationHistory.qml"
     }
 
     Loader {
         id: notifLoader
-        anchors.fill: parent
         active: true
         asynchronous: false
 
@@ -118,7 +134,7 @@ PanelWindow {
                                         id: dismiss
                                         anchors.fill: parent
                                         hoverEnabled: true
-                                        onClicked: notifCard.closing = true
+                                        onClicked: modelData.dismiss()
                                     }
                                 }
                             }

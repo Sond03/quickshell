@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Mpris
 
-import "../Colors/"
+import qs.Colors
 
 Rectangle {
     id: rowBg
@@ -93,7 +93,7 @@ Rectangle {
                 MarqueeText  {
                     Layout.fillWidth: true
                     text: modelData.trackArtist || modelData.trackAlbumArtist
-                    color: Colors.emerald
+                    color: Colors.green
                     font { family: Colors.fontFamily; pixelSize: Colors.small; bold: false }
                 }
             }

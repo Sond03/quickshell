@@ -323,7 +323,7 @@ LazyLoader {
                                 opacity: model.month === grid.month ? 1 : 0
                                 text: grid.locale.toString(model.date, "d")
                                 font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true; underline: isToday }
-                                color: isToday ? Colors.cyan : (isHoliday ? Colors.crimson : Colors.blue)
+                                color: isToday ? Colors.sky : (isHoliday ? Colors.red : Colors.cBlue)
 
                             }
                         }

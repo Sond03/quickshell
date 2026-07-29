@@ -235,7 +235,7 @@ ShellRoot {
                     Text {
                         id: cpu
                         text: "CPU:" + sysData.cpuUsage + "%"
-                        color: Colors.yellow
+                        color: Colors.purple
                         font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
 
                         MouseArea{
@@ -254,7 +254,7 @@ ShellRoot {
                     Text {
                         id: mem
                         text: sysData.memUsage 
-                        color: Colors.cyan
+                        color: Colors.rose
                         font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
 
                         MouseArea {
@@ -273,7 +273,7 @@ ShellRoot {
                     Text {
                         id:powerButton
                         text: "⏻"
-                        color: mousePowerButton.containsMouse ? Colors.crimson : Colors.emerald
+                        color: mousePowerButton.containsMouse ? Colors.red : Colors.green
                         font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
                         MouseArea {
                             id: mousePowerButton
@@ -283,6 +283,7 @@ ShellRoot {
                             onClicked: Quickshell.execDetached(["wlogout"])
                             acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                         }
+                        Behavior on color { ColorAnimation { duration: 220 } }
                     }
                 }
             }
