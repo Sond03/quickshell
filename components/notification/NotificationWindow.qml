@@ -14,7 +14,7 @@ import qs.components
 
 PanelWindow {
     id: root
-    implicitWidth: 300
+    implicitWidth: 315
     // implicitHeight: Math.max(1, notifLoader.item ? notifLoader.item.implicitHeight : 0)
     implicitHeight: 800
     color: "transparent"
@@ -22,7 +22,7 @@ PanelWindow {
     property var notifications: Notifications.notifications
 
     anchors{ right: true; top: true }
-    margins{ right: 15; top: 15 }
+    margins{ top: 15 }
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "NotificationWindow:qml"
@@ -54,17 +54,23 @@ PanelWindow {
         asynchronous: false
 
 
-        sourceComponent: ListView {
-            id: notifList
-            width: root.width
-            height:Math.min(contentHeight, root.implicitHeight)
-            model: root.notifications
-            spacing: 10
-            interactive: false
+        sourceComponent: Item {
+            id: wrapper
+            width: root.width - 15
+            height: Math.min(notifList.contentHeight, root.implicitHeight)
 
-            displaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
-            remove: Transition { NumberAnimation { property: "x"; to: 350; duration: 350; easing.type: Easing.OutCubic } }
-            removeDisplaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
+            ListView {
+                id: notifList
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: root.implicitHeight
+                model: root.notifications
+                spacing: 5
+                interactive: false
+
+                displaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
+                remove: Transition { NumberAnimation { property: "x"; to: 350; duration: 350; easing.type: Easing.OutCubic } }
+                removeDisplaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
 
 
                 delegate: Rectangle {
@@ -97,7 +103,7 @@ PanelWindow {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 2
-                            
+
                             RowLayout {
 
                                 Text {
@@ -138,7 +144,7 @@ PanelWindow {
                                     }
                                 }
                             }
-                            
+
 
                             Text {
                                 Layout.fillWidth: true
@@ -185,6 +191,7 @@ PanelWindow {
                     }
                 }
             }
+        }
         }
     }
 

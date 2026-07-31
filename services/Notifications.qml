@@ -19,6 +19,7 @@ Singleton {
 
         onNotification: notif => {
             notif.tracked = true
+            notif.retained = true
             history.insert(0, {
                 summary: notif.summary,
                 body: notif.body,

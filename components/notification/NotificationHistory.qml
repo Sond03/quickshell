@@ -39,7 +39,7 @@ PanelWindow {
                 Text {
                     text: "Notifications"
                     font { family: Colors.fontFamily; pixelSize: Colors.large; bold: true}
-                    color: Colors.green
+                    color: Colors.purple
                 }
 
                 Rectangle{
@@ -56,7 +56,7 @@ PanelWindow {
                         id: clearText
                         text: "Clear all"
                         font { family: Colors.fontFamily; pixelSize: Colors.large; bold: false}
-                        color: clear.containsMouse ? Qt.lighter(Colors.crimson, 1.2) : Colors.white
+                        color: clear.containsMouse ? Colors.red : Colors.white
                         Behavior on color { ColorAnimation { duration: 220 } }
                     }
                     MouseArea {
@@ -108,6 +108,10 @@ PanelWindow {
                 Layout.margins: 5
                 clip: true 
 
+                displaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
+                remove: Transition { NumberAnimation { property: "x"; to: 350; duration: 350; easing.type: Easing.OutCubic } }
+                removeDisplaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
+
                 delegate: Rectangle {
                     width: (parent?.width || 0) - 9
                     height: (contentRow?.implicitHeight || 0) + 16
@@ -115,9 +119,10 @@ PanelWindow {
                     color: Qt.darker(Colors.fg, 1.0)
 
                     border {
-                        color: model.urgency === NotificationUrgency.Critical ? Colors.crimson : Colors.blue
+                        color: model.urgency === NotificationUrgency.Critical ? Colors.red : Colors.blue
                         width: 3
                     }
+
                     ColumnLayout {
                         id: contentRow
                         anchors.fill: parent
@@ -136,11 +141,12 @@ PanelWindow {
                             Text{ 
                                 text: model.appName 
                                 font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-                                color: Colors.cyan
+                                color: Colors.sapphire
                             }
-                            Item { Layout.fillWidth: true}
-                            RowLayout {
 
+                            Item { Layout.fillWidth: true}
+
+                            RowLayout {
                                 Text {
                                     text: model.time
                                     font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true}
@@ -174,12 +180,21 @@ PanelWindow {
                                 }
                             }
                         }
-                        Text {
-                            Layout.fillWidth: true
-                            text: model.summary + " " + model.body
-                            color: Colors.blue
-                            font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-                            wrapMode: Text.WordWrap
+                        RowLayout {
+                            spacing: 6
+                            Text {
+                                text: model.summary
+                                color: Colors.cBlue
+                                font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+                                wrapMode: Text.WordWrap
+                            }
+                            Text {
+                                Layout.alignment: Qt.AlignLeft
+                                text: model.body 
+                                color: Colors.white
+                                font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+                                wrapMode: Text.WordWrap
+                            }
                         }
                     }
 
@@ -188,5 +203,3 @@ PanelWindow {
         }
     }
 }
-
-

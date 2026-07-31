@@ -23,7 +23,7 @@ QtObject{
     property color red: "#f38ba8"
     property color crimson: "#DC143C"
     property color emerald: "#73daca"
-    property color white: "#eeeeee"
+    property color white: "#cdd6f4"
     property color green: "#a6e3a1"
     property color rose: "#f5e0dc"
 
