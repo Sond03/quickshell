@@ -8,6 +8,8 @@ QtObject{
     property color base: "#1e1e2e"
     property color border: "#11111b"
     property color border2: "#181825"
+    property color surface1: "#45475a"
+    property color overlay1: "#6c7086"
     property color fg: "#32344a"
     property color muted: "#444b6a"
     property color cyan: "#0db9d7"

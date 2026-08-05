@@ -6,9 +6,12 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Wayland
 
-import "./modules"
-import "./Colors" 
-import "./components/notification/"
+import "./components/"
+import qs.components
+import qs.components.notification
+import qs.components.AppMenu
+import qs.modules
+import qs.Colors
 
 ShellRoot { 
     PanelWindow {
@@ -290,4 +293,5 @@ ShellRoot {
         }
     }
     NotificationWindow{ }
+    MenuWindow { }
 }

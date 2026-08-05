@@ -17,18 +17,41 @@ PanelWindow {
     exclusionMode: ExclusionMode.Normal
     anchors{ right: true; top: true}
     margins{ top: 110}
-
     color: "transparent"
-    // property bool visible: false
+
+    property bool shown: false
+    signal closed()
+
+    function close() { 
+        shown = false
+    }
+
+    Component.onCompleted: shown = true
 
     Rectangle {
-        anchors.fill: parent
         color: Colors.bg
+        width: parent.width
+        height: parent.height
         topLeftRadius: 12
         bottomLeftRadius: 12
         topRightRadius: 0
         bottomRightRadius: 0
         border{ color: Colors.border; width: 1}
+
+        x: panelRoot.shown ? 0 : width
+
+        Behavior on x {
+            NumberAnimation {
+                duration: 250
+                easing.type: Easing.OutCubic
+                onRunningChanged: {
+                    if (!running && !panelRoot.shown) {
+                        panelRoot.closed()
+                    }
+                }
+            }
+        }
+
         ColumnLayout {
             anchors.fill: parent
             spacing: 5
@@ -64,7 +87,6 @@ PanelWindow {
                         anchors.fill: parent
                         hoverEnabled: true
                         onClicked: Notifications.dismissAll()
-                        // TODO
                     }
 
                 }
@@ -94,8 +116,7 @@ PanelWindow {
                         id: close
                         anchors.fill: parent
                         hoverEnabled: true
-                        onClicked: Quickshell.execDetached(["qs", "ipc","call", "history", "toggle"])
-                        // TODO make this better 
+                        onClicked: panelRoot.close()
                     }
                 }
             }
@@ -180,24 +201,17 @@ PanelWindow {
                                 }
                             }
                         }
-                        RowLayout {
-                            spacing: 6
-                            Text {
-                                text: model.summary
-                                color: Colors.cBlue
-                                font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-                                wrapMode: Text.WordWrap
-                            }
-                            Text {
-                                Layout.alignment: Qt.AlignLeft
-                                text: model.body 
-                                color: Colors.white
-                                font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-                                wrapMode: Text.WordWrap
-                            }
+                        Text {
+                            text: "<font color='" + Colors.cBlue + "'><b>" + model.summary + "</b></font> " + model.body
+                            textFormat: Text.StyledText
+                            color: Colors.white   // fallback/default color for the unstyled part
+                            font.family: Colors.fontFamily
+                            font.pixelSize: Colors.regular
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: 0
                         }
                     }
-
                 }
             }
         }

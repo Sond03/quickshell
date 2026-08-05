@@ -19,7 +19,8 @@ Singleton {
 
         onNotification: notif => {
             notif.tracked = true
-            notif.retained = true
+            // notif.Retainable.lock()
+            // TODO: make it retained and deleted
             history.insert(0, {
                 summary: notif.summary,
                 body: notif.body,
@@ -28,10 +29,13 @@ Singleton {
                 image: notif.image,
                 urgency: notif.urgency,
                 time: Qt.formatDateTime(new Date(), "HH:mm")
+                // notifObj: notif
+                // TODO
             })
         }
     }
 
     function dismissAll(){ history.clear() }
     function dismiss(index){ history.remove(index, 1)}
+    // TODO: make these delete the retained notif
 }

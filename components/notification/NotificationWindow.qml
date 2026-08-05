@@ -33,12 +33,23 @@ PanelWindow {
         item: notifLoader.item 
     }
 
+    GlobalShortcut {
+        name: "toggleNotificationHistory"
+        description: "Show notification history window"
+
+        onPressed: ipc.toggle()
+    }
+
     IpcHandler {
         id: ipc
         target: "history"
-        
+
         function toggle() {
-            history.active = !history.active
+            if (!history.active) {
+                history.active = true
+            } else if (history.item) {
+                history.item.close()
+            }
         }
     }
 
@@ -46,6 +57,14 @@ PanelWindow {
         id: history
         active: false
         source: "NotificationHistory.qml"
+
+    }
+
+    Connections {
+        target: history.item
+        function onClosed() {
+            history.active = false
+        }
     }
 
     Loader {
