@@ -20,7 +20,6 @@ PanelWindow {
     color: "transparent"
 
     property bool shown: false
-    signal closed()
 
     function close() { 
         shown = false
@@ -157,7 +156,15 @@ PanelWindow {
                                 Layout.alignment: Qt.AlignLeft
                                 implicitSize: 20
                                 visible: source.toString() !== ""
-                                source: model.image || model.appIcon || ""
+                                source: image()
+
+                                function image() {
+                                    if (model.image != "") {
+                                        return model.image;
+                                    } else if (model.appIcon != "") {
+                                        return model.appIcon;
+                                    } else { return "" }
+                                }
                             }
                             Text{ 
                                 text: model.appName 

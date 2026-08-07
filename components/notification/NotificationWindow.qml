@@ -15,7 +15,6 @@ import qs.components
 PanelWindow {
     id: root
     implicitWidth: 315
-    // implicitHeight: Math.max(1, notifLoader.item ? notifLoader.item.implicitHeight : 0)
     implicitHeight: 800
     color: "transparent"
 
@@ -195,10 +194,13 @@ PanelWindow {
                         z: -1
                         onClicked: {
                             const className = notifCard.modelData.appName
-                            if (className) {
+                            if (!modelData.resident && className) {
                                 Hyprland.dispatch(`hl.dsp.focus({ window = "class:^(${className})$" })`)
+                                modelData.dismiss()
+                            } else {
+                                modelData.invoke()
+                                modelData.dismiss()
                             }
-                            modelData.dismiss()
                         }
                     }
                     Timer{
