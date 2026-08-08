@@ -4,5 +4,11 @@ import Quickshell.Io
 import QtQuick
 
 Singleton {
-    ListModel{ id: applications}
+    readonly property var applications: DesktopEntries.applications
+
+    function search(query) {
+        return applications.values.filter(app =>
+            app.name.toLowerCase().includes(query.toLowerCase())
+        )
+    }
 }

@@ -1,3 +1,4 @@
 singleton Holidays 1.0 Holidays.qml
 singleton Audio 1.0 AudioService.qml
 singleton Notifications 1.0 Notifications.qml
+singleton Applications 1.0 ApplicationService.qml
