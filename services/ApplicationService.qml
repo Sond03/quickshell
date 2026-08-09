@@ -7,8 +7,11 @@ Singleton {
     readonly property var applications: DesktopEntries.applications
 
     function search(query) {
-        return applications.values.filter(app =>
-            app.name.toLowerCase().includes(query.toLowerCase())
-        )
+        const list = query.length === 0
+        ? applications.values
+        : applications.values.filter(app =>
+        app.name.toLowerCase().includes(query.toLowerCase())
+    )
+    return list.slice().sort((a, b) => a.name.localeCompare(b.name))
     }
 }

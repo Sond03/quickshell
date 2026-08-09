@@ -19,7 +19,11 @@ PanelWindow {
         name: "toggleAppMenu"
         description: "Show the application menu"
 
-        onPressed: panelRoot.visible = !panelRoot.visible 
+        onPressed: toggleMenu()
+    }
+
+    function toggleMenu(){
+        panelRoot.visible = !panelRoot.visible
     }
 
     implicitWidth: 650
@@ -30,6 +34,7 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrLayershell.OnDemand
     color: "transparent"
     visible: false
+    property var filteredApps: Applications.search(textFieldId.text)
 
     onVisibleChanged: {
         if (visible) {
@@ -68,6 +73,7 @@ PanelWindow {
                 implicitHeight: 40
                 implicitWidth: parent.width
                 placeholderText: "Search"
+                onTextChanged: Applications.query = text
             }
         }
 
@@ -76,17 +82,33 @@ PanelWindow {
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
-            model: Applications.applications
+            model: filteredApps
             spacing: 2
 
             delegate: Rectangle {
                 id: application
                 width: appListView.width
                 height: 50
-                color: Colors.base
-                border.color: Colors.surface1
-                border.width: 1
+                color: mouseArea.containsMouse ? Colors.bg : "transparent"
                 radius: 8
+
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent 
+                    hoverEnabled: true
+                    onClicked: {
+                        if (modelData.runInTerminal) {
+                            Quickshell.execDetached({
+                                command: ["kitty", "-e", ...modelData.command],
+                                workingDirectory: modelData.workingDirectory
+                            })
+                        } else {
+                            modelData.execute()    
+                        }
+                        panelRoot.visible = false
+                    }
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                }
 
                 RowLayout {
                     anchors.left: parent.left
@@ -103,16 +125,20 @@ PanelWindow {
                         }
                     }
 
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: modelData.name
-                        font { family: Colors.fontFamily; pixelSize: Colors.regular ; bold: false }
-                        color: Colors.rose
-                    }
-                    Text {
-                        text: modelData.genericName
-                        font { family: Colors.fontFamily; pixelSize: Colors.regular ; bold: false }
-                        color: Colors.muted
+                    ColumnLayout {
+                        spacing: 2
+                        Text {
+                            Layout.alignment: Qt.AlignVCenter
+                            text: modelData.name
+                            font { family: Colors.fontFamily; pixelSize: Colors.regular ; bold: false }
+                            color: Colors.rose
+                        }
+                        Text {
+                            text: modelData.genericName
+                            font { family: Colors.fontFamily; pixelSize: Colors.regular ; bold: false }
+                            color: Colors.muted
+                            visible: modelData.genericName != ""
+                        }
                     }
                 }
             }
