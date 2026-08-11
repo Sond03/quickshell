@@ -7,11 +7,12 @@ import Quickshell.Widgets
 
 import qs.Colors
 import qs.services
+import qs
 
 PanelWindow {
     id: panelRoot
     implicitWidth: 350
-    implicitHeight: 800
+    implicitHeight: 900
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "NotificationHistory:qml"
     exclusionMode: ExclusionMode.Normal
@@ -27,17 +28,47 @@ PanelWindow {
 
     Component.onCompleted: shown = true
 
+
+    Item {
+    id: panelContent
+    width: parent.width
+    height: parent.height
+    x: panelRoot.shown ? 0 : width
+
+    Behavior on x {
+        NumberAnimation {
+            duration: 250
+            easing.type: Easing.OutCubic
+            onRunningChanged: {
+                if (!running && !panelRoot.shown) {
+                    panelRoot.closed()
+                }
+            }
+        }
+    }
+    Corner { 
+        id: topCorner
+        edge: 1 
+        anchors.right: parent.right
+    }
+    Corner { 
+        id: bottomCorner
+        edge: 0 
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+    }
     Rectangle {
+        id: history
         color: Colors.bg
         width: parent.width
-        height: parent.height
+        height: parent.height - (topCorner.size + bottomCorner.size)
+        y: + topCorner.size 
         topLeftRadius: 12
         bottomLeftRadius: 12
         topRightRadius: 0
         bottomRightRadius: 0
-        border{ color: Colors.border; width: 1}
 
-        x: panelRoot.shown ? 0 : width
+        x: 0
 
         Behavior on x {
             NumberAnimation {
@@ -223,4 +254,5 @@ PanelWindow {
             }
         }
     }
+}
 }

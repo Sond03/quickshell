@@ -294,4 +294,5 @@ ShellRoot {
     }
     NotificationWindow{ }
     MenuWindow { }
+    Corner{ }
 }
