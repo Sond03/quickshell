@@ -1,6 +1,5 @@
 import Quickshell
 import QtQuick.Effects
-import Quickshell 
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
@@ -22,12 +21,45 @@ PanelWindow {
         onPressed: toggleMenu()
     }
 
+    Shortcut {
+        id: escapeSequence
+        sequence: "Escape"
+        onActivated: {
+            toggleMenu()
+        }
+    }
+
+    HyprlandFocusGrab {
+        active: panelRoot.visible
+        windows: [panelRoot]
+        onCleared: {
+            if (panelRoot.visible) {
+                hideMenu()
+            }
+        }
+    }
     function toggleMenu(){
         panelRoot.visible = !panelRoot.visible
     }
 
+    function hideMenu() {
+        panelRoot.visible = false
+    }
+
+    function launchApp(app) { 
+        if (app.runInTerminal) {
+            Quickshell.execDetached({
+                command: ["kitty", "-e", ...modelData.command],
+                workingDirectory: modelData.workingDirectory
+            })
+        } else {
+            app.execute()    
+        }
+        panelRoot.visible = false
+    }
+
     implicitWidth: 650
-    implicitHeight: 600
+    implicitHeight: 595
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "MenuWindow:qs"
     exclusionMode: ExclusionMode.Ignore
@@ -35,6 +67,9 @@ PanelWindow {
     color: "transparent"
     visible: false
     property var filteredApps: Applications.search(textFieldId.text)
+
+    onFilteredAppsChanged: appListView.currentIndex = filteredApps.length > 0 ? 0 : -1
+
 
     onVisibleChanged: {
         if (visible) {
@@ -74,6 +109,22 @@ PanelWindow {
                 implicitWidth: parent.width
                 placeholderText: "Search"
                 onTextChanged: Applications.query = text
+
+                Keys.onPressed: (event) => {
+                    if (event.key === Qt.Key_Down) {
+                        if (appListView.currentIndex < filteredApps.length - 1)
+                        appListView.currentIndex++
+                        event.accepted = true
+                    } else if (event.key === Qt.Key_Up) {
+                        if (appListView.currentIndex > 0)
+                        appListView.currentIndex--
+                        event.accepted = true
+                    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                        if (appListView.currentIndex >= 0)
+                        panelRoot.launchApp(filteredApps[appListView.currentIndex])
+                        event.accepted = true
+                    }
+                }
             }
         }
 
@@ -84,30 +135,23 @@ PanelWindow {
             clip: true
             model: filteredApps
             spacing: 2
+            onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
 
             delegate: Rectangle {
                 id: application
                 width: appListView.width
                 height: 50
-                color: mouseArea.containsMouse ? Colors.bg : "transparent"
+                color: (mouseArea.containsMouse || index === appListView.currentIndex) ? Colors.bg : "transparent"
                 radius: 8
 
                 MouseArea {
                     id: mouseArea
                     anchors.fill: parent 
                     hoverEnabled: true
-                    onClicked: {
-                        if (modelData.runInTerminal) {
-                            Quickshell.execDetached({
-                                command: ["kitty", "-e", ...modelData.command],
-                                workingDirectory: modelData.workingDirectory
-                            })
-                        } else {
-                            modelData.execute()    
-                        }
-                        panelRoot.visible = false
+                    onContainsMouseChanged: {
+                        if (containsMouse) appListView.currentIndex = index
                     }
-                    acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                    onClicked: panelRoot.launchApp(modelData) 
                 }
 
                 RowLayout {
