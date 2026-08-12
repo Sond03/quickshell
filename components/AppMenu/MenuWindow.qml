@@ -49,8 +49,8 @@ PanelWindow {
     function launchApp(app) { 
         if (app.runInTerminal) {
             Quickshell.execDetached({
-                command: ["kitty", "-e", ...modelData.command],
-                workingDirectory: modelData.workingDirectory
+                command: ["kitty", "-e", ...app.command],
+                workingDirectory: app.workingDirectory
             })
         } else {
             app.execute()    
