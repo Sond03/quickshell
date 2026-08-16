@@ -11,6 +11,9 @@ Singleton {
     property var lastCpuIdle: 0
     property var lastCpuTotal: 0
     property var uptime: 0
+    property string iconResult: ""
+    property string osName: ""
+    property string kernelVersion: ""
 
     Process {
         id: memProc
@@ -47,6 +50,57 @@ Singleton {
                 statsRoot.uptime = `${test}`
             }
         }
+    }
+
+    Process {
+        id: hostNameProc
+        command: ["sh", "-c", "awk -F '=' '/LOGO/ {print$2}' /etc/*-release"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (!data) return
+                statsRoot.iconResult = data.trim()
+            }
+        }
+    }
+
+    Process {
+        id: kernelProc
+        command: ["sh", "-c", "uname -r"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (!data) return
+                statsRoot.kernel = data.trim()
+            }
+        }
+    }
+    
+    Process {
+        id: linuxTypeProc
+        command: ["sh", "-c", "awk -F '=' '/PRETTY_NAME/ {print$2}' /etc/*-release"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (!data) return
+                statsRoot.linuxType = data.trim()
+            }
+        }
+    }
+
+    Process{
+        id: versionsProc
+        command: ["sh", "-c", ". /etc/os-release; echo \"$PRETTY_NAME|$(uname -r)\""]
+        stdout: SplitParser {
+            onRead: data => {
+                if (!data) return
+                var parts = data.trim().split("|")
+                statsRoot.osName = parts[0]
+                statsRoot.kernelVersion = parts[1]
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        hostNameProc.running = true 
+        versionsProc.running = true
     }
 
     Process {

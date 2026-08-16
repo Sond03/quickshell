@@ -20,6 +20,7 @@ Item {
     property bool open: false
     property real closeDelay: 250
     property real dropdownExtraHeight: 0
+    property bool isDropdownOpen: false
     readonly property real sharedWidth: Math.max( label.implicitWidth + 12, (contentLoader.item ? contentLoader.item.implicitWidth : 0) + 16)
 
 
