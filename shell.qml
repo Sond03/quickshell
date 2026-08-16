@@ -11,6 +11,7 @@ import qs.components
 import qs.components.notification
 import qs.components.AppMenu
 import qs.modules
+import qs.modules
 import qs.Colors
 
 ShellRoot { 
@@ -22,8 +23,6 @@ ShellRoot {
 
         WlrLayershell.layer: WlrLayer.Top
         
-        Processes { id: sysData }
-
         Rectangle {
             id: background
             anchors.fill: parent 
@@ -38,84 +37,115 @@ ShellRoot {
             id: row
             anchors.fill: background
 
-            Rectangle{
-                id: workspaceContainer
-                implicitHeight: workspaceLayout.implicitHeight + 3
-                implicitWidth: workspaceLayout.implicitWidth + 16
-                color: Colors.bg
-                radius: 5
+            Item {
+                id: leftModules
+                Layout.preferredHeight: 30 
+                Layout.preferredWidth: leftBg.implicitWidth 
                 Layout.leftMargin: 5
 
-                RowLayout { id: workspaceLayout
-                    anchors.centerIn: parent
-                    spacing: 2
+                Rectangle{
+                    id: leftBg
+                    implicitHeight: 30
+                    implicitWidth: leftRow.implicitWidth + 16
+                    color: Colors.bg
+                    radius: 5
 
-                    Repeater {
-                        model: {
-                            let base = [1, 2, 3, 4, 5];
-                            let focused = Hyprland.focusedWorkspace?.id;
-                            if (focused > 5) {
-                                base.push(focused);
-                            }
-                            return base;
-                        }
+                    RowLayout {
+                        id: leftRow
+                        anchors.centerIn: parent
+                        spacing: 5
 
-                        Rectangle {
-                            id: workspaceCircle
-                            Layout.alignment: Qt.AlignVCenter
-                            Layout.preferredWidth: width
-                            Layout.preferredHeight: height
-
-                            property var workspace: Hyprland.workspaces.values.find(w => w.id == modelData)
-                            property bool isActive: Hyprland.focusedWorkspace?.id === modelData
-
-                            width: isActive ? 45 : 30
-                            height: 23
-                            radius: isActive ? width / 4.5  : width / 2
-
-
-                            color: mouseArea.containsMouse ? Colors.bg : isActive ? Colors.wsActive : workspace ? Colors.wsPopulated : Colors.bg
-
-                            Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-
-                            Text {
-                                text: modelData
-                                anchors.centerIn: parent 
-                                font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-                                color: mouseArea.containsMouse ? Colors.cyan : Colors.fg
-                            }
-
-                            MouseArea {
-                                id: mouseArea
-                                anchors.fill: parent 
+                        Text{
+                            property bool controlPanelOpen: false
+                            id: logo
+                            text: "󰣇"
+                            font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+                            color: Colors.cBlue
+                            MouseArea{
+                                id: logoMouse
+                                anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: Hyprland.dispatch(`hl.dsp.focus({ workspace = ${modelData} })`);
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                                onClicked: { 
+                                    logo.controlPanelOpen = !logo.controlPanelOpen
+                                    console.log(logo.controlPanelOpen)
+                                }
+                            }
+                            LazyLoader {
+                                active: logo.controlPanelOpen
+                                source: "modules/ControlPanel.qml"
+                                onActiveChanged: console.log(active)
+                            }
+                        } 
+
+                        Repeater {
+                            model: {
+                                let base = [1, 2, 3, 4, 5];
+                                let focused = Hyprland.focusedWorkspace?.id;
+                                if (focused > 5) {
+                                    base.push(focused);
+                                }
+                                return base;
+                            }
+
+                            Rectangle {
+                                id: workspaceCircle
+                                Layout.alignment: Qt.AlignVCenter
+                                Layout.preferredWidth: width
+                                Layout.preferredHeight: height
+
+                                property var workspace: Hyprland.workspaces.values.find(w => w.id == modelData)
+                                property bool isActive: Hyprland.focusedWorkspace?.id === modelData
+
+                                width: isActive ? 45 : 30
+                                height: 23
+                                radius: isActive ? width / 4.5 : width / 2
+
+
+                                color: mouseArea.containsMouse ? Colors.bg : isActive ? Colors.cBlue : workspace ? Qt.darker(Colors.cBlue, 1.3) : Colors.base
+
+                                Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                                Behavior on color { ColorAnimation { duration: 250; easing.type: Easing.OutCubic } }
+
+                                Text {
+                                    text: modelData
+                                    anchors.centerIn: parent 
+                                    font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+                                    color: mouseArea.containsMouse ? Colors.emerald : Colors.fg
+                                }
+
+                                MouseArea {
+                                    id: mouseArea
+                                    anchors.fill: parent 
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: Hyprland.dispatch(`hl.dsp.focus({ workspace = ${modelData} })`);
+                                    acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                                }
                             }
                         }
-                    }
-                    Text{
-                        padding: 5 
-                        Layout.alignment: Qt.AlignVCenter
-                        id:kitty 
-                        text: ""
-                        color: Colors.blue
-                        property bool kittyBounce: false
+                        Text{
+                            Layout.alignment: Qt.AlignVCenter
+                            id:kitty 
+                            text: ""
+                            color: Colors.blue
+                            property bool kittyBounce: false
 
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: kitty.kittyBounce = !kitty.kittyBounce
-                        }
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: kitty.kittyBounce = !kitty.kittyBounce
+                            }
 
-                        Loader {
-                            active: kitty.kittyBounce
-                            source: "RuiOgKatniss.qml"
+                            Loader {
+                                active: kitty.kittyBounce
+                                source: "RuiOgKatniss.qml"
+                            }
                         }
+                        SoundWidget{ }
                     }
-                    SoundWidget{ }
                 }
             }
             Item { Layout.fillWidth: true }
@@ -237,7 +267,7 @@ ShellRoot {
 
                     Text {
                         id: cpu
-                        text: "CPU:" + sysData.cpuUsage + "%"
+                        text: "CPU:" + Processes.cpuUsage + "%"
                         color: Colors.purple
                         font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
 
@@ -256,7 +286,7 @@ ShellRoot {
 
                     Text {
                         id: mem
-                        text: sysData.memUsage 
+                        text: Processes.memUsage 
                         color: Colors.rose
                         font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
 
@@ -270,7 +300,7 @@ ShellRoot {
                         MemoryWidget {
                             id: memPopup
                             isHovered: mouseMem.containsMouse || isPinned 
-                            procData: sysData.topProcs
+                            procData: Processes.topProcs
                         }
                     }
                     Text {

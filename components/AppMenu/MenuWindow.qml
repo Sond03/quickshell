@@ -70,7 +70,6 @@ PanelWindow {
 
     onFilteredAppsChanged: appListView.currentIndex = filteredApps.length > 0 ? 0 : -1
 
-
     onVisibleChanged: {
         if (visible) {
             textFieldId.forceActiveFocus()

@@ -2,7 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 
-import "./Processes.qml" as Processes 
+import "."
 import "../Colors"
 
 PanelWindow {

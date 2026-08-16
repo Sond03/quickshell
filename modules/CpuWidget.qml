@@ -4,7 +4,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-import "./Processes.qml" as Processes 
+import "."
 import "../Colors/"
 
 PanelWindow {

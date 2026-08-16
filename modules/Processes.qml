@@ -1,17 +1,16 @@
+pragma Singleton
 import QtQuick
 import Quickshell.Io
+import Quickshell
 
-Item {
+Singleton {
     id: statsRoot
 
     property int cpuUsage: 0
     property string memUsage: "0/0" 
     property var lastCpuIdle: 0
     property var lastCpuTotal: 0
-
-    implicitWidth: contentRow.width + 20
-    implicitHeight: 30
-
+    property var uptime: 0
 
     Process {
         id: memProc
@@ -23,6 +22,29 @@ Item {
                 var total = (parseFloat(parts[1]) / 1048576).toFixed(1)
                 var used = (parseFloat(parts[2]) / 1048576).toFixed(1)
                 statsRoot.memUsage = `${used} Gb / ${total} Gb`
+            }
+        }
+    }
+    
+    Process {
+        id: uptimeProc
+        function dayHourOrMinute(uptime) {
+            if (uptime[3] != undefined) {
+                return uptime[1] + uptime[2][0] + "" + uptime[3] + uptime[4][0];
+            } else {
+                return uptime[1] + uptime[2][0];
+            }
+        }
+
+        command: ["sh", "-c", "uptime -p"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (!data) return
+                var parts = data.trim().split(/\s+/)
+                var up = parts[2]
+                var pretty = parts[1] + parts[2][0]
+                var test = uptimeProc.dayHourOrMinute(parts)
+                statsRoot.uptime = `${test}`
             }
         }
     }
@@ -72,6 +94,7 @@ Item {
             cpuProc.running = true
             memProc.running = true
             topProcGrabber.running = true
+            uptimeProc.running = true
         }
     }
 }
