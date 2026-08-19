@@ -1,7 +1,5 @@
-import Quickshell
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Widgets
 import qs.components
 import qs.modules
 import qs.Colors
@@ -12,31 +10,31 @@ RowLayout {
         height: text.implicitHeight - 10
         width: text.implicitHeight - 10
         color: Colors.base
-        border.color: Qt.rgba(Colors.cBlue.r, Colors.cBlue.g, Colors.cBlue.b, 0.35)
+        border.color: Qt.rgba(Colors.purple.r, Colors.purple.g, Colors.purple.b, 0.35)
         border.width: 1
-        IconImage{
-            source: Quickshell.iconPath(Processes.iconResult)
-            implicitSize: text.implicitHeight - 15
-            visible: source != "" 
+
+        StyledText{
+            text: "" 
+            color: Colors.purple
+            font.pixelSize: text.implicitHeight - 20
             anchors.centerIn: parent
         }
     }
 
-    ColumnLayout{
+    ColumnLayout{ 
         id: text
         spacing: 2
+        Layout.fillWidth: true
         StyledText{
-            text: Processes.osName
-            visible: text != ""
+            text: "Hostname"
+            color: Colors.purple
             font.pixelSize: Colors.small -1
             font.bold: true
-            color: Colors.cBlue
         }
         StyledText{
-            text: Processes.kernelVersion
-            visible: text != ""
+            text: Processes.hostname
             font.pixelSize: Colors.small -1
-            color: Colors.white
-        } 
+        }
     }
-}
+} 
+

@@ -27,18 +27,17 @@ PanelWindowStyled {
             anchors.fill: parent
             StyledRectangle{
                 id: topBg
-                implicitHeight: 50
+                implicitHeight: content.implicitHeight
                 implicitWidth: root.implicitWidth - 11
                 Layout.alignment: Qt.AlignTop
                 Layout.margins: 5
                 border.color: Colors.cBlue
                 border.width: 0
-                RowLayout{
-                    anchors.verticalCenter: parent.verticalCenter
+                ColumnLayout{
+                    id: content
+                    anchors.fill: parent
                     spacing: 5
-                    Uptime{}
-                    Sysname{}
-
+                    TopBar{}
                 }
             }
         }

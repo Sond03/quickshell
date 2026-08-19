@@ -14,6 +14,8 @@ Singleton {
     property string iconResult: ""
     property string osName: ""
     property string kernelVersion: ""
+    property string hostname: ""
+    property string wm: ""
 
     Process {
         id: memProc
@@ -44,43 +46,19 @@ Singleton {
             onRead: data => {
                 if (!data) return
                 var parts = data.trim().split(/\s+/)
-                var up = parts[2]
-                var pretty = parts[1] + parts[2][0]
-                var test = uptimeProc.dayHourOrMinute(parts)
-                statsRoot.uptime = `${test}`
+                var uptime = uptimeProc.dayHourOrMinute(parts)
+                statsRoot.uptime = `${uptime}`
             }
         }
     }
 
     Process {
-        id: hostNameProc
+        id: osIconProc
         command: ["sh", "-c", "awk -F '=' '/LOGO/ {print$2}' /etc/*-release"]
         stdout: SplitParser {
             onRead: data => {
                 if (!data) return
                 statsRoot.iconResult = data.trim()
-            }
-        }
-    }
-
-    Process {
-        id: kernelProc
-        command: ["sh", "-c", "uname -r"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (!data) return
-                statsRoot.kernel = data.trim()
-            }
-        }
-    }
-    
-    Process {
-        id: linuxTypeProc
-        command: ["sh", "-c", "awk -F '=' '/PRETTY_NAME/ {print$2}' /etc/*-release"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (!data) return
-                statsRoot.linuxType = data.trim()
             }
         }
     }
@@ -98,9 +76,35 @@ Singleton {
         }
     }
 
+    Process{
+        id: hostNameProc
+        command: ["sh", "-c", "hostname"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (!data) return
+                statsRoot.hostname = data.trim()
+            }
+        }
+    }
+
+
+    Process {
+        id: hyprVersionProc
+        command: ["sh", "-c", "hyprctl version"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                var firstLine = this.text.split("\n")[0]
+                var parts = firstLine.split(" ")
+                statsRoot.wm = parts[0] + " " + parts[1]
+            }
+        }
+    }
+
     Component.onCompleted: {
-        hostNameProc.running = true 
+        osIconProc.running = true 
         versionsProc.running = true
+        hostNameProc.running  = true
+        hyprVersionProc.running = true
     }
 
     Process {

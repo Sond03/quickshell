@@ -12,31 +12,30 @@ RowLayout {
         height: text.implicitHeight - 10
         width: text.implicitHeight - 10
         color: Colors.base
-        border.color: Qt.rgba(Colors.cBlue.r, Colors.cBlue.g, Colors.cBlue.b, 0.35)
+        border.color: Qt.rgba(Colors.blue.r, Colors.blue.g, Colors.blue.b, 0.35)
         border.width: 1
-        IconImage{
-            source: Quickshell.iconPath(Processes.iconResult)
-            implicitSize: text.implicitHeight - 15
-            visible: source != "" 
+
+        StyledText{
+            text: "" 
+            color: Colors.blue
+            font.pixelSize: text.implicitHeight - 20
             anchors.centerIn: parent
         }
     }
 
-    ColumnLayout{
+    ColumnLayout{ 
         id: text
         spacing: 2
+        Layout.fillWidth: true
         StyledText{
-            text: Processes.osName
-            visible: text != ""
+            text: "Window Manager"
+            color: Colors.blue
             font.pixelSize: Colors.small -1
             font.bold: true
-            color: Colors.cBlue
         }
         StyledText{
-            text: Processes.kernelVersion
-            visible: text != ""
+            text: Processes.wm
             font.pixelSize: Colors.small -1
-            color: Colors.white
-        } 
+        }
     }
-}
+} 
