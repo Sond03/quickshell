@@ -15,308 +15,315 @@ import qs.modules
 import qs.Colors
 
 ShellRoot { 
-    PanelWindow {
-        id: root
-        anchors { top:true; left: true; right: true }
-        implicitHeight: 40
-        color: "transparent"
+    Variants{
+        model: Quickshell.screens
 
-        WlrLayershell.layer: WlrLayer.Top
-        
-        Rectangle {
-            id: background
-            anchors.fill: parent 
-            anchors.leftMargin: 5
-            anchors.rightMargin: 5
-            opacity: 0.75
-            radius: 5
-            color: Colors.bg
-        }
+        PanelWindow {
+            id: root
 
-        RowLayout {
-            id: row
-            anchors.fill: background
+            required property ShellScreen modelData
+            screen: modelData
+            anchors { top:true; left: true; right: true }
+            implicitHeight: 40
+            color: "transparent"
 
-            Item {
-                id: leftModules
-                Layout.preferredHeight: 30 
-                Layout.preferredWidth: leftBg.implicitWidth 
-                Layout.leftMargin: 5
+            WlrLayershell.layer: WlrLayer.Top
 
-                Rectangle{
-                    id: leftBg
-                    implicitHeight: 30
-                    implicitWidth: leftRow.implicitWidth + 16
-                    color: Colors.bg
-                    radius: 5
+            Rectangle {
+                id: background
+                anchors.fill: parent 
+                anchors.leftMargin: 5
+                anchors.rightMargin: 5
+                opacity: 0.75
+                radius: 5
+                color: Colors.bg
+            }
 
-                    RowLayout {
-                        id: leftRow
-                        anchors.centerIn: parent
-                        spacing: 5
+            RowLayout {
+                id: row
+                anchors.fill: background
 
-                        Text{
-                            property bool controlPanelOpen: false
-                            id: logo
-                            text: "󰣇"
-                            font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-                            color: Colors.cBlue
-                            MouseArea{
-                                id: logoMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-                                onClicked: { 
-                                    logo.controlPanelOpen = !logo.controlPanelOpen
-                                    console.log(logo.controlPanelOpen)
-                                }
-                            }
-                            LazyLoader {
-                                active: logo.controlPanelOpen
-                                source: "modules/ControlPanel.qml"
-                                onActiveChanged: console.log(active)
-                            }
-                        } 
+                Item {
+                    id: leftModules
+                    Layout.preferredHeight: 30 
+                    Layout.preferredWidth: leftBg.implicitWidth 
+                    Layout.leftMargin: 5
 
-                        Repeater {
-                            model: {
-                                let base = [1, 2, 3, 4, 5];
-                                let focused = Hyprland.focusedWorkspace?.id;
-                                if (focused > 5) {
-                                    base.push(focused);
-                                }
-                                return base;
-                            }
+                    Rectangle{
+                        id: leftBg
+                        implicitHeight: 30
+                        implicitWidth: leftRow.implicitWidth + 16
+                        color: Colors.bg
+                        radius: 5
 
-                            Rectangle {
-                                id: workspaceCircle
-                                Layout.alignment: Qt.AlignVCenter
-                                Layout.preferredWidth: width
-                                Layout.preferredHeight: height
+                        RowLayout {
+                            id: leftRow
+                            anchors.centerIn: parent
+                            spacing: 5
 
-                                property var workspace: Hyprland.workspaces.values.find(w => w.id == modelData)
-                                property bool isActive: Hyprland.focusedWorkspace?.id === modelData
-
-                                width: isActive ? 45 : 30
-                                height: 23
-                                radius: isActive ? width / 4.5 : width / 2
-
-
-                                color: mouseArea.containsMouse ? Colors.bg : isActive ? Colors.cBlue : workspace ? Qt.darker(Colors.cBlue, 1.3) : Colors.base
-
-                                Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
-                                Behavior on color { ColorAnimation { duration: 250; easing.type: Easing.OutCubic } }
-
-                                Text {
-                                    text: modelData
-                                    anchors.centerIn: parent 
-                                    font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-                                    color: mouseArea.containsMouse ? Colors.emerald : Colors.fg
-                                }
-
-                                MouseArea {
-                                    id: mouseArea
-                                    anchors.fill: parent 
+                            Text{
+                                property bool controlPanelOpen: false
+                                id: logo
+                                text: "󰣇"
+                                font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+                                color: Colors.cBlue
+                                MouseArea{
+                                    id: logoMouse
+                                    anchors.fill: parent
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: Hyprland.dispatch(`hl.dsp.focus({ workspace = ${modelData} })`);
                                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                                    onClicked: { 
+                                        logo.controlPanelOpen = !logo.controlPanelOpen
+                                        console.log(logo.controlPanelOpen)
+                                    }
+                                }
+                                LazyLoader {
+                                    active: logo.controlPanelOpen
+                                    source: "modules/ControlPanel.qml"
+                                    onActiveChanged: console.log(active)
+                                }
+                            } 
+
+                            Repeater {
+                                model: {
+                                    let base = [1, 2, 3, 4, 5];
+                                    let focused = Hyprland.focusedWorkspace?.id;
+                                    if (focused > 5) {
+                                        base.push(focused);
+                                    }
+                                    return base;
+                                }
+
+                                Rectangle {
+                                    id: workspaceCircle
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.preferredWidth: width
+                                    Layout.preferredHeight: height
+
+                                    property var workspace: Hyprland.workspaces.values.find(w => w.id == modelData)
+                                    property bool isActive: Hyprland.focusedWorkspace?.id === modelData
+
+                                    width: isActive ? 45 : 30
+                                    height: 23
+                                    radius: isActive ? width / 4.5 : width / 2
+
+
+                                    color: mouseArea.containsMouse ? Colors.bg : isActive ? Colors.cBlue : workspace ? Qt.darker(Colors.cBlue, 1.3) : Colors.base
+
+                                    Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                                    Behavior on color { ColorAnimation { duration: 250; easing.type: Easing.OutCubic } }
+
+                                    Text {
+                                        text: modelData
+                                        anchors.centerIn: parent 
+                                        font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+                                        color: mouseArea.containsMouse ? Colors.emerald : Colors.fg
+                                    }
+
+                                    MouseArea {
+                                        id: mouseArea
+                                        anchors.fill: parent 
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: Hyprland.dispatch(`hl.dsp.focus({ workspace = ${modelData} })`);
+                                        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                                    }
                                 }
                             }
+                            Text{
+                                Layout.alignment: Qt.AlignVCenter
+                                id:kitty 
+                                text: ""
+                                color: Colors.blue
+                                property bool kittyBounce: false
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: kitty.kittyBounce = !kitty.kittyBounce
+                                }
+
+                                Loader {
+                                    active: kitty.kittyBounce
+                                    source: "RuiOgKatniss.qml"
+                                }
+                            }
+                            SoundWidget{ }
                         }
-                        Text{
-                            Layout.alignment: Qt.AlignVCenter
-                            id:kitty 
-                            text: ""
-                            color: Colors.blue
-                            property bool kittyBounce: false
+                    }
+                }
+                Item { Layout.fillWidth: true }
+
+                Item {
+                    id: clockContainer
+                    Layout.preferredWidth: clock.width + 20
+                    Layout.preferredHeight: 30 
+                    anchors.centerIn: parent
+
+                    Rectangle {
+                        id: clockBg
+                        anchors.fill: parent
+                        radius: 5
+                        color: mouseClock.containsMouse ? Qt.darker(Colors.bg, 1.1) : Colors.bg
+                        opacity: 1
+
+                        Behavior on color { ColorAnimation { duration: 120 } }
+
+                        MouseArea {
+                            id: mouseClock
+                            anchors.fill: parent 
+                            hoverEnabled:true
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                calendarPopup.active = true
+                                calendarPopup.item.isOpen = !calendarPopup.item.isOpen
+                            }
+                        }
+                    }
+
+                    Text {
+                        id: clock
+                        anchors.centerIn: parent
+                        color: Colors.blue
+                        font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+                        text: Qt.formatDateTime(new Date(), "dd - HH:mm")
+
+                        Timer {
+                            interval: 1000; running: true; repeat: true
+                            onTriggered: clock.text = Qt.formatDateTime(new Date(), "dd - HH:mm")
+                        }
+                    }
+                    CalendarWidget { id: calendarPopup }
+                }
+                Item { Layout.fillWidth: true }
+
+                Item {
+                    id: rightModules
+                    Layout.preferredWidth: (hovered||trayOpen) ? moduleExpand : moduleWidth
+                    Layout.preferredHeight: 30 
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.rightMargin: 5
+
+                    property int expandHover:  15
+                    property bool hovered: hoverHandler.hovered
+                    property int moduleWidth: contentRow.implicitWidth + 15
+                    property int moduleExpand: moduleWidth + expandHover
+                    property bool trayOpen: false
+
+                    HoverHandler { id: hoverHandler}
+
+                    Rectangle {
+                        id: rightBg
+                        anchors.right: parent.right 
+                        anchors.verticalCenter: parent.verticalCenter
+                        implicitHeight: parent.height
+                        width: parent.width
+                        radius: 5
+                        color: Colors.bg
+
+                        Behavior on width {
+                            NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+                        }
+
+                        Text {
+                            id: leftArrow
+                            text: "❮"
+                            color: Colors.fg
+
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.leftMargin: 2
+
+                            rotation: (arrowHover.hovered||rightModules.trayOpen) ? -90 : 0
+                            opacity: (rightModules.hovered||rightModules.trayOpen) ? 1 : 0
+
+                            Behavior on rotation { NumberAnimation { duration: 150; easing.type: Easing.InOutQuad } }
 
                             MouseArea {
                                 anchors.fill: parent
+                                onClicked: {
+                                    rightModules.trayOpen = !rightModules.trayOpen
+                                    trayWidget.isOpen = !trayWidget.isOpen 
+                                }
+                            }
+
+                            HoverHandler { id: arrowHover }
+                        }
+                    }
+
+                    TrayWidget{
+                        id: trayWidget
+                        onVisibleChanged: {
+                            if (!visible) {
+                                isOpen = false
+                                rightModules.trayOpen = false
+                            }
+                        }
+
+                    }
+                    RowLayout {
+                        id: contentRow
+                        anchors.right: parent.right
+                        anchors.rightMargin: 8
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 10
+
+                        Text {
+                            id: cpu
+                            text: "CPU:" + Processes.cpuUsage + "%"
+                            color: Colors.purple
+                            font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+
+                            MouseArea{
+                                id: mouseCpu
+                                anchors.fill: parent 
+                                hoverEnabled: true
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                                onClicked: cpuPopup.isPinned = !cpuPopup.isPinned
+                            }
+                            CpuWidget {
+                                id: cpuPopup
+                                isHovered: mouseCpu.containsMouse || isPinned
+                            }
+                        }
+
+                        Text {
+                            id: mem
+                            text: Processes.memUsage 
+                            color: Colors.rose
+                            font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+
+                            MouseArea {
+                                id: mouseMem
+                                anchors.fill: parent 
+                                hoverEnabled: true
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                                onClicked: memPopup.isPinned = !memPopup.isPinned
+                            }
+                            MemoryWidget {
+                                id: memPopup
+                                isHovered: mouseMem.containsMouse || isPinned 
+                                procData: Processes.topProcs
+                            }
+                        }
+                        Text {
+                            id:powerButton
+                            text: "⏻"
+                            color: mousePowerButton.containsMouse ? Colors.red : Colors.green
+                            font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
+                            MouseArea {
+                                id: mousePowerButton
+                                anchors.fill: parent 
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: kitty.kittyBounce = !kitty.kittyBounce
+                                onClicked: Quickshell.execDetached(["wlogout"])
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                             }
-
-                            Loader {
-                                active: kitty.kittyBounce
-                                source: "RuiOgKatniss.qml"
-                            }
+                            Behavior on color { ColorAnimation { duration: 220 } }
                         }
-                        SoundWidget{ }
-                    }
-                }
-            }
-            Item { Layout.fillWidth: true }
-
-            Item {
-                id: clockContainer
-                Layout.preferredWidth: clock.width + 20
-                Layout.preferredHeight: 30 
-                anchors.centerIn: parent
-
-                Rectangle {
-                    id: clockBg
-                    anchors.fill: parent
-                    radius: 5
-                    color: mouseClock.containsMouse ? Qt.darker(Colors.bg, 1.1) : Colors.bg
-                    opacity: 1
-
-                    Behavior on color { ColorAnimation { duration: 120 } }
-
-                    MouseArea {
-                        id: mouseClock
-                        anchors.fill: parent 
-                        hoverEnabled:true
-                        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            calendarPopup.active = true
-                            calendarPopup.item.isOpen = !calendarPopup.item.isOpen
-                        }
-                    }
-                }
-
-                Text {
-                    id: clock
-                    anchors.centerIn: parent
-                    color: Colors.blue
-                    font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-                    text: Qt.formatDateTime(new Date(), "dd - HH:mm")
-
-                    Timer {
-                        interval: 1000; running: true; repeat: true
-                        onTriggered: clock.text = Qt.formatDateTime(new Date(), "dd - HH:mm")
-                    }
-                }
-                CalendarWidget { id: calendarPopup }
-            }
-            Item { Layout.fillWidth: true }
-
-            Item {
-                id: rightModules
-                Layout.preferredWidth: (hovered||trayOpen) ? moduleExpand : moduleWidth
-                Layout.preferredHeight: 30 
-                Layout.alignment: Qt.AlignVCenter
-                Layout.rightMargin: 5
-
-                property int expandHover:  15
-                property bool hovered: hoverHandler.hovered
-                property int moduleWidth: contentRow.implicitWidth + 15
-                property int moduleExpand: moduleWidth + expandHover
-                property bool trayOpen: false
-
-                HoverHandler { id: hoverHandler}
-
-                Rectangle {
-                    id: rightBg
-                    anchors.right: parent.right 
-                    anchors.verticalCenter: parent.verticalCenter
-                    implicitHeight: parent.height
-                    width: parent.width
-                    radius: 5
-                    color: Colors.bg
-
-                    Behavior on width {
-                        NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
-                    }
-
-                    Text {
-                        id: leftArrow
-                        text: "❮"
-                        color: Colors.fg
-
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.leftMargin: 2
-
-                        rotation: (arrowHover.hovered||rightModules.trayOpen) ? -90 : 0
-                        opacity: (rightModules.hovered||rightModules.trayOpen) ? 1 : 0
-
-                        Behavior on rotation { NumberAnimation { duration: 150; easing.type: Easing.InOutQuad } }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                rightModules.trayOpen = !rightModules.trayOpen
-                                trayWidget.isOpen = !trayWidget.isOpen 
-                            }
-                        }
-
-                        HoverHandler { id: arrowHover }
-                    }
-                }
-
-                TrayWidget{
-                    id: trayWidget
-                    onVisibleChanged: {
-                        if (!visible) {
-                            isOpen = false
-                            rightModules.trayOpen = false
-                        }
-                    }
-
-                }
-                RowLayout {
-                    id: contentRow
-                    anchors.right: parent.right
-                    anchors.rightMargin: 8
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 10
-
-                    Text {
-                        id: cpu
-                        text: "CPU:" + Processes.cpuUsage + "%"
-                        color: Colors.purple
-                        font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-
-                        MouseArea{
-                            id: mouseCpu
-                            anchors.fill: parent 
-                            hoverEnabled: true
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-                            onClicked: cpuPopup.isPinned = !cpuPopup.isPinned
-                        }
-                        CpuWidget {
-                            id: cpuPopup
-                            isHovered: mouseCpu.containsMouse || isPinned
-                        }
-                    }
-
-                    Text {
-                        id: mem
-                        text: Processes.memUsage 
-                        color: Colors.rose
-                        font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-
-                        MouseArea {
-                            id: mouseMem
-                            anchors.fill: parent 
-                            hoverEnabled: true
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-                            onClicked: memPopup.isPinned = !memPopup.isPinned
-                        }
-                        MemoryWidget {
-                            id: memPopup
-                            isHovered: mouseMem.containsMouse || isPinned 
-                            procData: Processes.topProcs
-                        }
-                    }
-                    Text {
-                        id:powerButton
-                        text: "⏻"
-                        color: mousePowerButton.containsMouse ? Colors.red : Colors.green
-                        font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
-                        MouseArea {
-                            id: mousePowerButton
-                            anchors.fill: parent 
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Quickshell.execDetached(["wlogout"])
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-                        }
-                        Behavior on color { ColorAnimation { duration: 220 } }
                     }
                 }
             }
