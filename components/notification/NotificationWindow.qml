@@ -12,207 +12,214 @@ import qs.Colors
 import qs.services
 import qs.components
 
-PanelWindow {
-    id: root
-    implicitWidth: 315
-    implicitHeight: 800
-    color: "transparent"
+Variants {
+    id: variants
+    model: Quickshell.screens.filter(s => s.name === "DP-1")
+    PanelWindow {
+        id: root
+        required property ShellScreen modelData
+        screen: modelData
 
-    property var notifications: Notifications.notifications
+        implicitWidth: 315
+        implicitHeight: 800
+        color: "transparent"
 
-    anchors{ right: true; top: true }
-    margins{ top: 15 }
+        property var notifications: Notifications.notifications
 
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.namespace: "NotificationWindow:qml"
-    exclusionMode: ExclusionMode.Ignore
-    WlrLayershell.keyboardFocus: WlrLayershell.OnDemand
+        anchors{ right: true; top: true }
+        margins{ top: 15 }
 
-    mask: Region {
-        item: notifLoader.item 
-    }
+        WlrLayershell.layer: WlrLayer.Overlay
+        WlrLayershell.namespace: "NotificationWindow:qml"
+        exclusionMode: ExclusionMode.Ignore
+        WlrLayershell.keyboardFocus: WlrLayershell.OnDemand
 
-    GlobalShortcut {
-        name: "toggleNotificationHistory"
-        description: "Show notification history window"
+        mask: Region {
+            item: notifLoader.item 
+        }
 
-        onPressed: ipc.toggle()
-    }
+        GlobalShortcut {
+            name: "toggleNotificationHistory"
+            description: "Show notification history window"
 
-    IpcHandler {
-        id: ipc
-        target: "history"
+            onPressed: ipc.toggle()
+        }
 
-        function toggle() {
-            if (!history.active) {
-                history.active = true
-            } else if (history.item) {
-                history.item.close()
+        IpcHandler {
+            id: ipc
+            target: "history"
+
+            function toggle() {
+                if (!history.active) {
+                    history.active = true
+                } else if (history.item) {
+                    history.item.close()
+                }
             }
         }
-    }
 
-    LazyLoader{
-        id: history
-        active: false
-        source: "NotificationHistory.qml"
+        LazyLoader{
+            id: history
+            active: false
+            source: "NotificationHistory.qml"
 
-    }
-
-    Connections {
-        target: history.item
-        function onClosed() {
-            history.active = false
         }
-    }
 
-    Loader {
-        id: notifLoader
-        active: true
-        asynchronous: false
+        Connections {
+            target: history.item
+            function onClosed() {
+                history.active = false
+            }
+        }
 
-
-        sourceComponent: Item {
-            id: wrapper
-            width: root.width - 15
-            height: Math.min(notifList.contentHeight, root.implicitHeight)
-
-            ListView {
-                id: notifList
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: root.implicitHeight
-                model: root.notifications
-                spacing: 5
-                interactive: false
-
-                displaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
-                remove: Transition { NumberAnimation { property: "x"; to: 350; duration: 350; easing.type: Easing.OutCubic } }
-                removeDisplaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
+        Loader {
+            id: notifLoader
+            active: true
+            asynchronous: false
 
 
-                delegate: Rectangle {
-                    id: notifCard
-                    required property var modelData
-                    width: notifList.width
-                    height: row.implicitHeight + 20
-                    radius: 5
-                    color: Colors.bg
-                    border {
-                        color: modelData.urgency === NotificationUrgency.Critical ? Colors.crimson : Colors.blue
-                        width: 2
-                    }
+            sourceComponent: Item {
+                id: wrapper
+                width: root.width - 15
+                height: Math.min(notifList.contentHeight, root.implicitHeight)
 
-                    RowLayout {
-                        id: row
-                        anchors.fill: parent
-                        anchors.margins: 10
-                        spacing: 8
+                ListView {
+                    id: notifList
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: root.implicitHeight
+                    model: root.notifications
+                    spacing: 5
+                    interactive: false
 
-                        Image {
-                            Layout.preferredHeight: 36
-                            Layout.preferredWidth: 36
-                            Layout.alignment: Qt.AlignHCenter
-                            fillMode: Image.PreserveAspectFit
-                            visible: source.toString() !== ""
-                            source: notifCard.modelData.image || notifCard.modelData.appIcon || ""
+                    displaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
+                    remove: Transition { NumberAnimation { property: "x"; to: 350; duration: 350; easing.type: Easing.OutCubic } }
+                    removeDisplaced: Transition { NumberAnimation { property: "y"; duration: 250; easing.type: Easing.OutCubic } }
+
+
+                    delegate: Rectangle {
+                        id: notifCard
+                        required property var modelData
+                        width: notifList.width
+                        height: row.implicitHeight + 20
+                        radius: 5
+                        color: Colors.bg
+                        border {
+                            color: modelData.urgency === NotificationUrgency.Critical ? Colors.crimson : Colors.blue
+                            width: 2
                         }
 
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 2
+                        RowLayout {
+                            id: row
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 8
 
-                            RowLayout {
+                            Image {
+                                Layout.preferredHeight: 36
+                                Layout.preferredWidth: 36
+                                Layout.alignment: Qt.AlignHCenter
+                                fillMode: Image.PreserveAspectFit
+                                visible: source.toString() !== ""
+                                source: notifCard.modelData.image || notifCard.modelData.appIcon || ""
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 2
+
+                                RowLayout {
+
+                                    Text {
+                                        Layout.fillWidth: true
+                                        text: notifCard.modelData.summary 
+                                        color: Colors.blue
+                                        font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true}
+                                        elide: Text.ElideRight
+                                    }
+
+                                    Rectangle{
+                                        Layout.alignment: Qt.AlignRight
+                                        width: 22
+                                        height: 22
+                                        radius: 5
+                                        color: dismiss.containsMouse ? Qt.rgba(1, 1, 1, 0.08) : "transparent"
+                                        antialiasing: true
+
+                                        Behavior on color {
+                                            ColorAnimation {
+                                                duration: 120
+                                            }
+                                        }
+
+                                        Text { 
+                                            anchors.centerIn: parent
+                                            text: ""
+                                            color: dismiss.containsMouse ? Colors.crimson : Colors.emerald 
+                                            font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true}
+                                            visible: true
+                                            opacity: 1
+                                        }
+                                        MouseArea {
+                                            id: dismiss
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            onClicked: modelData.dismiss()
+                                        }
+                                    }
+                                }
+
 
                                 Text {
                                     Layout.fillWidth: true
-                                    text: notifCard.modelData.summary 
-                                    color: Colors.blue
-                                    font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true}
-                                    elide: Text.ElideRight
+                                    visible: text != ""
+                                    text: notifCard.modelData.body
+                                    color: Colors.white
+                                    font { family: Colors.fontFamily; pixelSize: Colors.small; bold: false}
+                                    wrapMode: Text.WordWrap
                                 }
 
-                                Rectangle{
-                                    Layout.alignment: Qt.AlignRight
-                                    width: 22
-                                    height: 22
-                                    radius: 5
-                                    color: dismiss.containsMouse ? Qt.rgba(1, 1, 1, 0.08) : "transparent"
-                                    antialiasing: true
+                                TextFieldStyled {
+                                    id: replyField
+                                    Layout.fillWidth: true
+                                    visible: notifCard.modelData.hasInlineReply
+                                    placeholderText: qsTr("Reply..")
+                                    hoverEnabled: true
 
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: 120
-                                        }
+                                    onAccepted: {
+                                        notifCard.modelData.sendInlineReply(replyField.text)
+                                        replyField.clear()
                                     }
-
-                                    Text { 
-                                        anchors.centerIn: parent
-                                        text: ""
-                                        color: dismiss.containsMouse ? Colors.crimson : Colors.emerald 
-                                        font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true}
-                                        visible: true
-                                        opacity: 1
-                                    }
-                                    MouseArea {
-                                        id: dismiss
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        onClicked: modelData.dismiss()
-                                    }
-                                }
-                            }
-
-
-                            Text {
-                                Layout.fillWidth: true
-                                visible: text != ""
-                                text: notifCard.modelData.body
-                                color: Colors.white
-                                font { family: Colors.fontFamily; pixelSize: Colors.small; bold: false}
-                                wrapMode: Text.WordWrap
-                            }
-
-                            TextFieldStyled {
-                                id: replyField
-                                Layout.fillWidth: true
-                                visible: notifCard.modelData.hasInlineReply
-                                placeholderText: qsTr("Reply..")
-                                hoverEnabled: true
-
-                                onAccepted: {
-                                    notifCard.modelData.sendInlineReply(replyField.text)
-                                    replyField.clear()
                                 }
                             }
                         }
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        acceptedButtons: Qt.LeftButton
-                        cursorShape: Qt.PointingHandCursor
-                        z: -1
-                        onClicked: {
-                            const className = notifCard.modelData.appName
-                            if (!modelData.resident && className) {
-                                Hyprland.dispatch(`hl.dsp.focus({ window = "class:^(${className})$" })`)
-                                modelData.dismiss()
-                            } else {
-                                modelData.invoke()
-                                modelData.dismiss()
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.LeftButton
+                            cursorShape: Qt.PointingHandCursor
+                            z: -1
+                            onClicked: {
+                                const className = notifCard.modelData.appName
+                                if (!modelData.resident && className) {
+                                    Hyprland.dispatch(`hl.dsp.focus({ window = "class:^(${className})$" })`)
+                                    modelData.dismiss()
+                                } else {
+                                    modelData.invoke()
+                                    modelData.dismiss()
+                                }
                             }
                         }
-                    }
-                    Timer{
-                        running: true
-                        repeat: true
-                        interval: 5000
+                        Timer{
+                            running: true
+                            repeat: true
+                            interval: 5000
 
-                        onTriggered: modelData.dismiss()
+                            onTriggered: modelData.dismiss()
+                        }
                     }
                 }
             }
         }
-        }
     }
+}
 
