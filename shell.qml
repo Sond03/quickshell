@@ -271,8 +271,6 @@ ShellRoot {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 10
 
-                        BatWidget{}
-
                         Text {
                             id: cpu
                             text: "CPU:" + Processes.cpuUsage + "%"
