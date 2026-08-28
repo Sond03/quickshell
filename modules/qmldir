@@ -6,4 +6,5 @@ MemoryWidget 1.0 MemoryWidget.qml
 PipewireRow 1.0 PipewireRow.qml
 SoundWidget 1.0 SoundWidget.qml
 TrayWidget 1.0 TrayWidget.qml
+BatWidget 1.0 BatWidget.qml
 
