@@ -3,14 +3,17 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import QtQuick.Layouts
 
 import "."
 import "../Colors/"
+import qs.components
 
 PanelWindow {
     id: popup
-    implicitWidth: 150
-    implicitHeight: 50 + (coreUsages.length * 22)
+    implicitWidth: 155
+    // implicitHeight: 50 + (coreUsages.length * 22) + tempText.implicitHeight
+    implicitHeight: content.implicitHeight + 20  
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "cpuWidget:quickshell"
@@ -77,6 +80,45 @@ PanelWindow {
         onTriggered: coresProcGrabber.running = true
     }
 
+    Item {
+        id: avgCpu
+
+        property real usagePercent: 0
+        property real prevIdle: 0
+        property real prevTotal: 0
+
+        Process {
+            id: avgCpuProc
+            command: ["sh", "-c", "grep '^cpu ' /proc/stat"]
+            stdout: SplitParser {
+                onRead: data => {
+                    let p = data.trim().split(/\s+/).slice(1).map(Number)
+                    let idle = p[3] + p[4]  // idle + iowait
+                    let total = p.reduce((a, b) => a + b, 0)
+
+                    let dIdle = idle - avgCpu.prevIdle
+                    let dTotal = total - avgCpu.prevTotal
+
+                    if (avgCpu.prevTotal !== 0 && dTotal > 0) {
+                        avgCpu.usagePercent = Math.max(0, Math.min(100,
+                        Math.round(100 * (dTotal - dIdle) / dTotal)))
+                    }
+
+                    avgCpu.prevIdle = idle
+                    avgCpu.prevTotal = total
+                }
+            }
+        }
+
+        Timer {
+            interval: 1000
+            running: true
+            repeat: true
+            triggeredOnStart: true
+            onTriggered: avgCpuProc.running = true
+        }
+    }
+
     Rectangle {
         id: container
         anchors.fill: parent
@@ -108,6 +150,7 @@ PanelWindow {
         }
 
         Column {
+            id: content
             anchors.fill: parent
             anchors.margins: 15
             spacing: 6
@@ -116,8 +159,8 @@ PanelWindow {
                 text: "Core Usage"  
                 color: Colors.blue
                 font { pixelSize: Colors.small ; bold: true; family: Colors.fontFamily }
-                  width: parent.width
-                  horizontalAlignment: Text.AlignHCenter
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
             }
 
             Rectangle {
@@ -162,6 +205,82 @@ PanelWindow {
                     }
                 }
             } 
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Colors.muted
+            }
+
+            ColumnLayout {
+                spacing: 2
+                Layout.fillWidth: true
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    StyledText {
+                        text: "Temp"
+                        size: Colors.tiny
+                        color: Colors.cBlue
+                    }
+                    Rectangle {
+                        Layout.preferredWidth: 70
+                        height: 10
+                        color: Colors.cpuBar
+                        radius: 5
+                        Rectangle {
+                            width: parent.width * Math.min(Processes.temp / 100, 1)
+                            height: parent.height
+                            radius: 5
+                            color: Processes.temp > 90 ? Colors.cpuHigh
+                            : Processes.temp > 60 ? Colors.cpuMed
+                            : Colors.cpuLow
+                            Behavior on width { NumberAnimation { duration: 400 } }
+                            Behavior on color { ColorAnimation { duration: 400 } }
+                        }
+                    }
+                    StyledText {
+                        text: Processes.temp + "󰔄"
+                        size: Colors.tiny
+                        horizontalAlignment: Text.AlignRight
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    StyledText {
+                        text: "Avg"
+                        size: Colors.tiny
+                        color: Colors.cBlue
+                    }
+                    Item { Layout.fillWidth: true }
+                    Rectangle {
+                        Layout.preferredWidth: 70
+                        height: 10
+                        color: Colors.cpuBar
+                        radius: 5
+                        Rectangle {
+                            width: parent.width * (avgCpu.usagePercent / 100)
+                            height: parent.height
+                            radius: 5
+                            color: avgCpu.usagePercent > 80 ? Colors.cpuHigh
+                            : avgCpu.usagePercent > 50 ? Colors.cpuMed
+                            : Colors.cpuLow
+                            Behavior on width { NumberAnimation { duration: 400 } }
+                            Behavior on color { ColorAnimation { duration: 400 } }
+                        }
+                    }
+                    Item{ Layout.fillWidth: true}
+                    StyledText {
+                        text: avgCpu.usagePercent + "%"
+                        size: Colors.tiny
+                        horizontalAlignment: Text.AlignRight
+                    }
+                }
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import qs.Colors
 
 Text {
     property bool bold: false
-    font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: bold }
+    property int size: Colors.regular
+    font { family: Colors.fontFamily; pixelSize: size; bold: bold }
     color: Colors.white
 }

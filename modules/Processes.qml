@@ -16,6 +16,9 @@ Singleton {
     property string kernelVersion: ""
     property string hostname: ""
     property string wm: ""
+    
+    property real temp: 0
+
 
     Process {
         id: memProc
@@ -131,6 +134,16 @@ Singleton {
     property string tempBuffer: ""
 
     Process {
+        id: cpuTempProc
+        command: ["sh", "-c", "cat /sys/class/hwmon/hwmon6/temp1_input"]
+        stdout: SplitParser {
+            onRead: data => {
+                statsRoot.temp = parseInt(data) / 1000
+            }
+        }
+    }
+
+    Process {
         id: topProcGrabber
         command: ["sh", "-c", "ps -eo comm:15,%mem --sort=-%mem | head -n 6 | tail -n 5"]
 
@@ -153,6 +166,7 @@ Singleton {
             memProc.running = true
             topProcGrabber.running = true
             uptimeProc.running = true
+            cpuTempProc.running = true
         }
     }
 }
