@@ -16,6 +16,10 @@ Singleton {
     property string kernelVersion: ""
     property string hostname: ""
     property string wm: ""
+    property string gpuUsage: ""
+    property string gpuMemMax: ""
+    property string gpuMemUsage: ""
+    property string gpuTemp: ""
     
     property real temp: 0
 
@@ -144,6 +148,20 @@ Singleton {
     }
 
     Process {
+        id: gpuProc
+        command: ["sh", "-c", "nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv,noheader"]
+        stdout: SplitParser {
+            onRead: data => {
+                var parts = data.trim().split(",")
+                statsRoot.gpuUsage = parts[0].replace(/\s+/g, "")
+                statsRoot.gpuMemUsage = parts[1]
+                statsRoot.gpuMemMax = parts[2]
+                statsRoot.gpuTemp = parts[3]
+            }
+        }
+    }
+
+    Process {
         id: topProcGrabber
         command: ["sh", "-c", "ps -eo comm:15,%mem --sort=-%mem | head -n 6 | tail -n 5"]
 
@@ -167,6 +185,7 @@ Singleton {
             topProcGrabber.running = true
             uptimeProc.running = true
             cpuTempProc.running = true
+            gpuProc.running = true
         }
     }
 }

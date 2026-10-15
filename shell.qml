@@ -271,6 +271,29 @@ ShellRoot {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 10
 
+                        StyledText {
+                            id: gpu
+                            text: "Gpu:" + Processes.gpuUsage 
+                            bold: true
+                            color: Colors.cBlue
+                            property bool gpuOpen: false
+                            MouseArea{
+                                id: gpuMouse
+                                anchors.fill: parent 
+                                hoverEnabled: true
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                                onClicked:{
+                                    gpu.gpuOpen = !gpu.gpuOpen
+                                    console.log(gpu.gpuOpen)
+                                }
+                            }
+
+                            LazyLoader{
+                                active: gpu.gpuOpen
+                                source: "./modules/GpuWidget.qml"
+                            }
+                        }
+
                         Text {
                             id: cpu
                             text: "CPU:" + Processes.cpuUsage + "%"
