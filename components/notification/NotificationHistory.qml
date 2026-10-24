@@ -198,7 +198,7 @@ PanelWindow {
                                 }
                             }
                             Text{ 
-                                text: model.appName + " | <font color='" + Colors.cBlue + "'><b>" + model.summary + "</b></font> " 
+                                text: "<font color='" + Colors.cBlue + "'><b>" + model.summary + "</b></font> " 
                                 font { family: Colors.fontFamily; pixelSize: Colors.regular; bold: true }
                                 color: Colors.sapphire
                             }
@@ -240,7 +240,7 @@ PanelWindow {
                             }
                         }
                         Text {
-                            text: + model.body
+                            text: model.body
                             textFormat: Text.StyledText
                             color: Colors.white   // fallback/default color for the unstyled part
                             font.family: Colors.fontFamily

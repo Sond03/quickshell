@@ -10,6 +10,8 @@ import "../Colors/"
 import qs.components
 
 PanelWindowStyled {
+    implicitWidth: 300 
+    implicitHeight: 300
     anchors{
         top: true
         right:true
@@ -19,17 +21,28 @@ PanelWindowStyled {
     }
 
     StyledRectangle {
-        id: content
         anchors.fill: parent
         ColumnLayout {
+            id: content
             anchors.fill: parent
             anchors.margins: 10
             spacing: 5
+            StyledText{
+                text: "Gpu stats"
+                color: Colors.cBlue
+                Layout.alignment: Qt.AlignHCenter
+                bold: true
+            }
+            Rectangle {
+                height: 2
+                Layout.fillWidth: true
+                color: Colors.fg
+            }
             StyledRectangle{
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignTop
                 Layout.preferredHeight: memText.implicitHeight + 5
-                color: Colors.bg
+                color: Colors.fg
                 StyledText{
                     id: memText
                     text: Processes.gpuMemUsage + " | " + Processes.gpuMemMax
@@ -40,10 +53,10 @@ PanelWindowStyled {
             StyledRectangle{
                 Layout.fillWidth: true
                 Layout.preferredHeight: tempText.implicitHeight + 5
-                color: Colors.bg
+                color: Colors.fg
                 StyledText{
                     id: tempText
-                    text: Processes.gpuTemp
+                    text: Processes.gpuTemp + ""
                     size: Colors.large
                 }
             }

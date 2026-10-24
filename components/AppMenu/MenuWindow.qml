@@ -61,7 +61,7 @@ PanelWindow {
     implicitWidth: 650
     implicitHeight: 595
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.namespace: "MenuWindow:qs"
+    WlrLayershell.namespace: "MenuWindow:quickshell"
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.keyboardFocus: WlrLayershell.OnDemand
     color: "transparent"
